@@ -1,0 +1,97 @@
+/* Reset & base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main card */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px 48px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  width: 360px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  color: #2d2d2d;
+  margin-bottom: 32px;
+  letter-spacing: -0.3px;
+}
+
+/* Rate display */
+.rate-display {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+}
+
+#rate-value {
+  color: #667eea;
+}
+
+/* Timestamp */
+.updated-time {
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 28px;
+}
+
+/* Fetch button */
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Status message */
+.status {
+  margin-top: 16px;
+  font-size: 0.875rem;
+  min-height: 20px;
+}
+
+.status.loading {
+  color: #888;
+}
+
+.status.success {
+  color: #27ae60;
+}
+
+.status.error {
+  color: #e74c3c;
+}

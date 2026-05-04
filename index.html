@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💱 엔화 환율 확인기</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="card">
+    <h1>💱 엔화 환율 확인기</h1>
+
+    <!-- Current exchange rate display -->
+    <div class="rate-display">
+      100 ¥ = <span id="rate-value">---</span> ₩
+    </div>
+
+    <!-- Last updated timestamp -->
+    <div class="updated-time" id="updated-time">마지막 업데이트: -</div>
+
+    <!-- Fetch button -->
+    <button id="fetch-btn" onclick="fetchRate()">환율 가져오기</button>
+
+    <!-- Loading / success / error messages -->
+    <div class="status" id="status"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
