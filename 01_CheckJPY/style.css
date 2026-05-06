@@ -1,71 +1,99 @@
-/* Reset & base */
-* {
+/* ── Reset ── */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ── Page ── */
 body {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #F1F5F9;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
 }
 
-/* Main card */
+.container {
+  width: 100%;
+  max-width: 560px;
+  padding: 24px 16px;
+}
+
+/* ── Card ── */
 .card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 40px 48px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  width: 360px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 36px 40px 32px;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.07),
+    0 10px 40px -5px rgba(0,0,0,0.10);
 }
 
+/* ── Title ── */
 h1 {
-  font-size: 1.5rem;
-  color: #2d2d2d;
-  margin-bottom: 32px;
-  letter-spacing: -0.3px;
-}
-
-/* Rate display */
-.rate-display {
-  font-size: 1.6rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 10px;
+  color: #0F172A;
+  margin-bottom: 28px;
+  letter-spacing: -0.4px;
 }
 
+/* ── Rate section ── */
+.rate-section {
+  margin-bottom: 24px;
+}
+
+.rate-display {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+/* Current rate value — orange */
 #rate-value {
-  color: #667eea;
+  color: #F97316;
 }
 
-/* Timestamp */
+.currency-label {
+  font-size: 1.4rem;
+  color: #64748B;
+}
+
 .updated-time {
   font-size: 0.8rem;
-  color: #999;
-  margin-bottom: 28px;
+  color: #94A3B8;
+  font-weight: 500;
 }
 
-/* Fetch button */
+/* ── Refresh button — orange ── */
 button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  padding: 14px;
-  font-size: 1rem;
+  padding: 13px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #ffffff;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #FFFFFF;
+  background: #F97316;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
 }
 
 button:hover {
-  opacity: 0.9;
+  background: #EA6C0A;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
 }
 
 button:active {
@@ -73,25 +101,74 @@ button:active {
 }
 
 button:disabled {
-  opacity: 0.6;
+  background: #FED7AA;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
-/* Status message */
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Status ── */
 .status {
-  margin-top: 16px;
-  font-size: 0.875rem;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
   min-height: 20px;
+  text-align: center;
 }
 
-.status.loading {
-  color: #888;
+.status.loading { color: #94A3B8; }
+.status.success { color: #16A34A; }
+.status.error   { color: #DC2626; }
+
+/* ── Graph section ── */
+.graph-section {
+  margin-top: 28px;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 20px;
 }
 
-.status.success {
-  color: #27ae60;
+.graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.status.error {
-  color: #e74c3c;
+.graph-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.2px;
+}
+
+.graph-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.75rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Canvas ── */
+#rate-chart {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  background: #FAFAFA;
 }

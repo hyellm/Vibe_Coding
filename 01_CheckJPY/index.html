@@ -4,25 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>💱 엔화 환율 확인기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="card">
-    <h1>💱 엔화 환율 확인기</h1>
+  <div class="container">
+    <div class="card">
 
-    <!-- Current exchange rate display -->
-    <div class="rate-display">
-      100 ¥ = <span id="rate-value">---</span> ₩
+      <h1>💱 엔화 환율 확인기</h1>
+
+      <!-- Current rate -->
+      <div class="rate-section">
+        <div class="rate-display">
+          100 ¥ = <span id="rate-value">---</span> <span class="currency-label">₩</span>
+        </div>
+        <div class="updated-time" id="updated-time">마지막 업데이트: -</div>
+      </div>
+
+      <!-- Refresh button -->
+      <button id="fetch-btn" onclick="fetchRate()">
+        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+        </svg>
+        환율 새로고침
+      </button>
+
+      <!-- Status message -->
+      <div class="status" id="status"></div>
+
+      <!-- Today's rate chart -->
+      <div class="graph-section">
+        <div class="graph-header">
+          <span class="graph-title">오늘의 환율 변동</span>
+          <div class="graph-legend">
+            <span class="legend-dot" style="background:#2563EB"></span><span>최고</span>
+            <span class="legend-dot" style="background:#16A34A"></span><span>최저</span>
+            <span class="legend-dot" style="background:#F97316"></span><span>현재</span>
+          </div>
+        </div>
+        <canvas id="rate-chart"></canvas>
+      </div>
+
     </div>
-
-    <!-- Last updated timestamp -->
-    <div class="updated-time" id="updated-time">마지막 업데이트: -</div>
-
-    <!-- Fetch button -->
-    <button id="fetch-btn" onclick="fetchRate()">환율 가져오기</button>
-
-    <!-- Loading / success / error messages -->
-    <div class="status" id="status"></div>
   </div>
 
   <script src="script.js"></script>
