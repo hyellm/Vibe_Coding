@@ -13,7 +13,14 @@
   <div class="container">
     <div class="card">
 
-      <h1>💱 엔화 환율 확인기</h1>
+      <div class="card-header">
+        <h1>💱 엔화 환율 확인기</h1>
+        <button id="fetch-btn" onclick="fetchRate()" aria-label="새로고침" title="새로고침">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
 
       <!-- Current rate -->
       <div class="rate-section">
@@ -23,21 +30,13 @@
         <div class="updated-time" id="updated-time">마지막 업데이트: -</div>
       </div>
 
-      <!-- Refresh button -->
-      <button id="fetch-btn" onclick="fetchRate()">
-        <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
-        </svg>
-        환율 새로고침
-      </button>
-
       <!-- Status message -->
       <div class="status" id="status"></div>
 
-      <!-- Today's rate chart -->
+      <!-- 7-day chart -->
       <div class="graph-section">
         <div class="graph-header">
-          <span class="graph-title">오늘의 환율 변동</span>
+          <span class="graph-title">최근 7일 환율 추이</span>
           <div class="graph-legend">
             <span class="legend-dot" style="background:#2563EB"></span><span>최고</span>
             <span class="legend-dot" style="background:#16A34A"></span><span>최저</span>
