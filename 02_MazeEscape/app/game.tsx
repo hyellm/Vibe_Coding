@@ -25,7 +25,7 @@ function buildInitialState(difficulty: Difficulty): GameState {
     elapsedSeconds: 0,
     isComplete: false,
     difficulty,
-    visitedCells: new Set<string>(),
+    visitedCells: new Set([startKey]),
     pathHistory: [startKey],
     lastMovePath: [],
   };
@@ -88,17 +88,19 @@ export default function GameScreen() {
 
     const isBacktrack = next.pathHistory.length < prev.pathHistory.length;
 
-    // 현재 위치는 "통과 전" 이므로 하이라이팅 제외한 올바른 시작 상태
-    const prevPosKey = `${prev.playerPos.row},${prev.playerPos.col}`;
-    const correctPrevVisited = new Set(prev.pathHistory);
-    correctPrevVisited.delete(prevPosKey);
+    // pathHistory 기준으로 올바른 시작 상태 복원 (취소된 애니메이션 잔여 셀 정리)
+    const baseVisited = new Set(prev.pathHistory);
 
     if (isBacktrack) {
-      setGameState({ ...next, visitedCells: correctPrevVisited });
+      setGameState({ ...next, visitedCells: baseVisited });
 
-      // 포인터가 통과하는 셀을 순서대로 제거 — 목적지도 포함
-      next.lastMovePath.forEach((pos, idx) => {
-        const key = `${pos.row},${pos.col}`;
+      // 포인터가 셀을 떠나는 순서대로 제거 — 목적지는 포인터가 도착하므로 유지
+      const cellsToErase = [
+        `${prev.playerPos.row},${prev.playerPos.col}`,
+        ...next.lastMovePath.slice(0, -1).map(p => `${p.row},${p.col}`),
+      ];
+
+      cellsToErase.forEach((key, idx) => {
         const t = setTimeout(() => {
           setGameState((s) => {
             const v = new Set(s.visitedCells);
@@ -109,16 +111,11 @@ export default function GameScreen() {
         eraseTimersRef.current.push(t);
       });
     } else {
-      setGameState({ ...next, visitedCells: correctPrevVisited });
+      setGameState({ ...next, visitedCells: baseVisited });
 
-      // 출발 셀부터 목적지 바로 앞까지 순서대로 하이라이팅
-      // 목적지는 포인터가 아직 통과하지 않았으므로 제외
-      const cellsToAdd = [
-        prevPosKey,
-        ...next.lastMovePath.slice(0, -1).map(p => `${p.row},${p.col}`),
-      ];
-
-      cellsToAdd.forEach((key, idx) => {
+      // 포인터가 셀에 도착하는 순서대로 추가 — 목적지도 도착 시 하이라이팅
+      next.lastMovePath.forEach((pos, idx) => {
+        const key = `${pos.row},${pos.col}`;
         const t = setTimeout(() => {
           setGameState((s) => {
             const v = new Set(s.visitedCells);
