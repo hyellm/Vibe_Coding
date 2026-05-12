@@ -48,7 +48,6 @@ export default function DifficultyScreen() {
         </TouchableOpacity>
 
         <View style={styles.header}>
-          <Text style={styles.subtitle}>선택</Text>
           <Text style={styles.title}>DIFFICULTY</Text>
         </View>
 
@@ -95,12 +94,6 @@ const styles = StyleSheet.create({
   },
   header: {
     gap: 4,
-  },
-  subtitle: {
-    color: '#3d6b3d',
-    fontSize: 11,
-    letterSpacing: 4,
-    fontWeight: '600',
   },
   title: {
     color: '#1a3a1a',

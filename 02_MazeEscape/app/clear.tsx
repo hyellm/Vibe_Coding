@@ -21,12 +21,10 @@ export default function ClearScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     time: string;
-    moves: string;
     difficulty: string;
   }>();
 
   const time = parseInt(params.time ?? '0', 10);
-  const moves = parseInt(params.moves ?? '0', 10);
   const difficulty = (params.difficulty ?? 'normal') as Difficulty;
 
   const [best, setBest] = useState<BestRecord | null>(null);
@@ -82,10 +80,6 @@ export default function ClearScreen() {
             <Text style={styles.statLabel}>시간</Text>
             <Text style={styles.statValue}>{formatTime(time)}</Text>
           </View>
-          <View style={styles.statRow}>
-            <Text style={styles.statLabel}>이동 횟수</Text>
-            <Text style={styles.statValue}>{moves}</Text>
-          </View>
         </View>
 
         {best && (
@@ -94,9 +88,7 @@ export default function ClearScreen() {
               {isBestTime ? '🎉 최고 기록 갱신!' : '최고 기록'}
             </Text>
             {!isBestTime && (
-              <Text style={styles.bestValue}>
-                {formatTime(best.time)} · {best.moves}회
-              </Text>
+              <Text style={styles.bestValue}>{formatTime(best.time)}</Text>
             )}
           </View>
         )}
@@ -118,6 +110,14 @@ export default function ClearScreen() {
           >
             <Text style={styles.btnText}>다시 플레이</Text>
           </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuBtn}
+          onPress={() => router.replace('/difficulty')}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.menuText}>난이도 선택</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
   },
   menuBtn: {
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   menuText: {
     color: '#3d6b3d',

@@ -41,6 +41,8 @@ export interface GameState {
   isComplete: boolean;
   difficulty: Difficulty;
   visitedCells: Set<string>;
+  pathHistory: string[];    // start→current 순서 경로, 되돌아가기 감지용
+  lastMovePath: Position[]; // 마지막 이동에서 통과한 셀 목록, 애니메이션용
 }
 
 export interface BestRecord {

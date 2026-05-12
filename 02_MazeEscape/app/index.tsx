@@ -45,12 +45,8 @@ export default function StartScreen() {
         ]}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.subtitle}>— 퍼즐 게임 —</Text>
           <Text style={styles.title}>MAZE</Text>
           <Text style={styles.titleAccent}>ESCAPE</Text>
-          <Text style={styles.description}>
-            미로를 헤쳐나가세요.{'\n'}출구에 도달해 탈출하세요.
-          </Text>
         </View>
 
         <View style={styles.mazeDecor}>

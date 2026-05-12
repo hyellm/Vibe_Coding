@@ -4,11 +4,10 @@ import { formatTime } from '../utils/gameLogic';
 
 interface Props {
   elapsedSeconds: number;
-  moves: number;
   onRestart: () => void;
 }
 
-export default function GameHeader({ elapsedSeconds, moves, onRestart }: Props) {
+export default function GameHeader({ elapsedSeconds, onRestart }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.stat}>
@@ -19,11 +18,6 @@ export default function GameHeader({ elapsedSeconds, moves, onRestart }: Props) 
       <TouchableOpacity style={styles.restartBtn} onPress={onRestart} activeOpacity={0.7}>
         <Text style={styles.restartText}>↺ 재시작</Text>
       </TouchableOpacity>
-
-      <View style={styles.stat}>
-        <Text style={styles.label}>이동</Text>
-        <Text style={styles.value}>{moves}</Text>
-      </View>
     </View>
   );
 }

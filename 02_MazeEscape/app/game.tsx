@@ -15,6 +15,7 @@ const SWIPE_THRESHOLD = 20;
 function buildInitialState(difficulty: Difficulty): GameState {
   const { size } = DIFFICULTY_CONFIGS[difficulty];
   const { maze, startPos, goalPos } = generateMaze(size);
+  const startKey = `${startPos.row},${startPos.col}`;
   return {
     maze,
     playerPos: startPos,
@@ -24,7 +25,9 @@ function buildInitialState(difficulty: Difficulty): GameState {
     elapsedSeconds: 0,
     isComplete: false,
     difficulty,
-    visitedCells: new Set([`${startPos.row},${startPos.col}`]),
+    visitedCells: new Set([startKey]),
+    pathHistory: [startKey],
+    lastMovePath: [],
   };
 }
 
@@ -107,7 +110,6 @@ export default function GameScreen() {
 
         <GameHeader
           elapsedSeconds={gameState.elapsedSeconds}
-          moves={gameState.moves}
           onRestart={restart}
         />
 
@@ -118,6 +120,7 @@ export default function GameScreen() {
               playerPos={gameState.playerPos}
               goalPos={gameState.goalPos}
               visitedCells={gameState.visitedCells}
+              movePath={gameState.lastMovePath}
             />
           </View>
         </GestureDetector>
