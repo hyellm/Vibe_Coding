@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
-import { Difficulty, Direction, GameState, DIFFICULTY_CONFIGS } from '../types/game';
+import { Difficulty, Direction, GameState, DIFFICULTY_CONFIGS, CELL_MOVE_MS } from '../types/game';
 import { generateMaze } from '../utils/mazeGenerator';
 import { movePlayer, saveRecord } from '../utils/gameLogic';
 import MazeBoard from '../components/MazeBoard';
@@ -25,7 +25,7 @@ function buildInitialState(difficulty: Difficulty): GameState {
     elapsedSeconds: 0,
     isComplete: false,
     difficulty,
-    visitedCells: new Set([startKey]),
+    visitedCells: new Set<string>(),
     pathHistory: [startKey],
     lastMovePath: [],
   };
@@ -38,6 +38,11 @@ export default function GameScreen() {
 
   const [gameState, setGameState] = useState<GameState>(() => buildInitialState(diff));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const eraseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const gameStateRef = useRef(gameState);
+  gameStateRef.current = gameState;
+
+  useEffect(() => () => { eraseTimersRef.current.forEach(clearTimeout); }, []);
 
   useEffect(() => {
     if (gameState.isComplete) {
@@ -71,16 +76,64 @@ export default function GameScreen() {
   }, [gameState.isComplete]);
 
   const move = useCallback((direction: Direction) => {
-    setGameState((prev) => {
-      const next = movePlayer(prev, direction);
-      if (next !== prev) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-      return next;
-    });
+    const prev = gameStateRef.current;
+    const next = movePlayer(prev, direction);
+    if (next === prev) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    // 진행 중인 흔적 제거 애니메이션 취소
+    eraseTimersRef.current.forEach(clearTimeout);
+    eraseTimersRef.current = [];
+
+    const isBacktrack = next.pathHistory.length < prev.pathHistory.length;
+
+    // 현재 위치는 "통과 전" 이므로 하이라이팅 제외한 올바른 시작 상태
+    const prevPosKey = `${prev.playerPos.row},${prev.playerPos.col}`;
+    const correctPrevVisited = new Set(prev.pathHistory);
+    correctPrevVisited.delete(prevPosKey);
+
+    if (isBacktrack) {
+      setGameState({ ...next, visitedCells: correctPrevVisited });
+
+      // 포인터가 통과하는 셀을 순서대로 제거 — 목적지도 포함
+      next.lastMovePath.forEach((pos, idx) => {
+        const key = `${pos.row},${pos.col}`;
+        const t = setTimeout(() => {
+          setGameState((s) => {
+            const v = new Set(s.visitedCells);
+            v.delete(key);
+            return { ...s, visitedCells: v };
+          });
+        }, (idx + 1) * CELL_MOVE_MS);
+        eraseTimersRef.current.push(t);
+      });
+    } else {
+      setGameState({ ...next, visitedCells: correctPrevVisited });
+
+      // 출발 셀부터 목적지 바로 앞까지 순서대로 하이라이팅
+      // 목적지는 포인터가 아직 통과하지 않았으므로 제외
+      const cellsToAdd = [
+        prevPosKey,
+        ...next.lastMovePath.slice(0, -1).map(p => `${p.row},${p.col}`),
+      ];
+
+      cellsToAdd.forEach((key, idx) => {
+        const t = setTimeout(() => {
+          setGameState((s) => {
+            const v = new Set(s.visitedCells);
+            v.add(key);
+            return { ...s, visitedCells: v };
+          });
+        }, (idx + 1) * CELL_MOVE_MS);
+        eraseTimersRef.current.push(t);
+      });
+    }
   }, []);
 
   const restart = useCallback(() => {
+    eraseTimersRef.current.forEach(clearTimeout);
+    eraseTimersRef.current = [];
     if (timerRef.current) clearInterval(timerRef.current);
     setGameState(buildInitialState(diff));
   }, [diff]);

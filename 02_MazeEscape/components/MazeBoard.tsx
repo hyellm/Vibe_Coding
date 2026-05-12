@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Animated } from 'react-native';
-import { Cell, Position } from '../types/game';
+import { Cell, Position, CELL_MOVE_MS } from '../types/game';
 import Player from './Player';
 import Goal from './Goal';
 
@@ -13,7 +13,6 @@ interface Props {
 }
 
 const WALL = 2.5;
-const CELL_MOVE_MS = 80; // 셀 하나당 이동 시간 (일정 속도)
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const PADDING = 16;
 

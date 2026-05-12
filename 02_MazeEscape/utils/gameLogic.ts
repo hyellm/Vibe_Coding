@@ -83,7 +83,8 @@ export function movePlayer(state: GameState, direction: Direction): GameState {
   let newPathHistory: string[];
   let newVisitedCells: Set<string>;
 
-  if (state.visitedCells.has(firstKey)) {
+  const pathSet = new Set(state.pathHistory);
+  if (pathSet.has(firstKey)) {
     // 되돌아가는 이동: 목적지까지 pathHistory를 잘라내고 흔적 제거
     const destKey = `${targetPos.row},${targetPos.col}`;
     const idx = state.pathHistory.lastIndexOf(destKey);

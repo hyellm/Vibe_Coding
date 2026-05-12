@@ -53,3 +53,5 @@ export interface BestRecord {
 export type Records = Partial<Record<Difficulty, BestRecord>>;
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
+
+export const CELL_MOVE_MS = 80; // 셀 하나 이동에 걸리는 시간(ms) — MazeBoard와 game.tsx가 공유
