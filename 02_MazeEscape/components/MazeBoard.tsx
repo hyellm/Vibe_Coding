@@ -10,13 +10,14 @@ interface Props {
   goalPos: Position;
   visitedCells: Set<string>;
   movePath: Position[];
+  onAnimationStart?: () => void;
 }
 
 const WALL = 2.5;
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const PADDING = 16;
 
-export default function MazeBoard({ maze, playerPos, goalPos, visitedCells, movePath }: Props) {
+export default function MazeBoard({ maze, playerPos, goalPos, visitedCells, movePath, onAnimationStart }: Props) {
   const size = maze.length;
   const cellSize = useMemo(
     () => Math.floor((SCREEN_WIDTH - PADDING * 2) / size),
@@ -26,16 +27,22 @@ export default function MazeBoard({ maze, playerPos, goalPos, visitedCells, move
 
   const translateX = useRef(new Animated.Value(playerPos.col * cellSize)).current;
   const translateY = useRef(new Animated.Value(playerPos.row * cellSize)).current;
+  const currentAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+  const onAnimationStartRef = useRef(onAnimationStart);
+  onAnimationStartRef.current = onAnimationStart;
 
   useEffect(() => {
+    if (currentAnimRef.current) {
+      currentAnimRef.current.stop();
+      currentAnimRef.current = null;
+    }
+
     if (movePath.length === 0) {
-      // 게임 시작 또는 재시작: 즉시 위치 이동 (애니메이션 없음)
       translateX.setValue(playerPos.col * cellSize);
       translateY.setValue(playerPos.row * cellSize);
       return;
     }
 
-    // 경로의 각 셀을 일정 속도(CELL_MOVE_MS)로 순서대로 통과
     const anims = movePath.map(pos =>
       Animated.parallel([
         Animated.timing(translateX, {
@@ -50,7 +57,14 @@ export default function MazeBoard({ maze, playerPos, goalPos, visitedCells, move
         }),
       ])
     );
-    Animated.sequence(anims).start();
+
+    const seq = Animated.sequence(anims);
+    currentAnimRef.current = seq;
+    // 하이라이트 타이머를 애니메이션 시작 시점 기준으로 맞추기 위해 start() 직전에 호출
+    onAnimationStartRef.current?.();
+    seq.start(({ finished }) => {
+      if (finished) currentAnimRef.current = null;
+    });
   }, [movePath, playerPos, cellSize]);
 
   return (

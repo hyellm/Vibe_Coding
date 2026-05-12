@@ -41,6 +41,7 @@ export default function GameScreen() {
   const eraseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;
+  const animStepsRef = useRef<{ key: string; action: 'add' | 'remove' }[]>([]);
 
   useEffect(() => () => { eraseTimersRef.current.forEach(clearTimeout); }, []);
 
@@ -75,6 +76,23 @@ export default function GameScreen() {
     return () => clearTimeout(timeout);
   }, [gameState.isComplete]);
 
+  // useEffect(onAnimationStart) 시점 기준으로 타이머 시작 → 포인터 도착 타이밍과 일치
+  const handleAnimationStart = useCallback(() => {
+    eraseTimersRef.current.forEach(clearTimeout);
+    eraseTimersRef.current = [];
+    animStepsRef.current.forEach(({ key, action }, idx) => {
+      const t = setTimeout(() => {
+        setGameState((s) => {
+          const v = new Set(s.visitedCells);
+          if (action === 'add') v.add(key);
+          else v.delete(key);
+          return { ...s, visitedCells: v };
+        });
+      }, (idx + 1) * CELL_MOVE_MS);
+      eraseTimersRef.current.push(t);
+    });
+  }, []);
+
   const move = useCallback((direction: Direction) => {
     const prev = gameStateRef.current;
     const next = movePlayer(prev, direction);
@@ -82,55 +100,31 @@ export default function GameScreen() {
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // 진행 중인 흔적 제거 애니메이션 취소
-    eraseTimersRef.current.forEach(clearTimeout);
-    eraseTimersRef.current = [];
-
     const isBacktrack = next.pathHistory.length < prev.pathHistory.length;
-
-    // pathHistory 기준으로 올바른 시작 상태 복원 (취소된 애니메이션 잔여 셀 정리)
     const baseVisited = new Set(prev.pathHistory);
 
     if (isBacktrack) {
-      setGameState({ ...next, visitedCells: baseVisited });
-
-      // 포인터가 셀을 떠나는 순서대로 제거 — 목적지는 포인터가 도착하므로 유지
+      // 포인터가 셀을 떠나는 순서대로 제거 — 현재 위치부터, 목적지는 유지
       const cellsToErase = [
         `${prev.playerPos.row},${prev.playerPos.col}`,
         ...next.lastMovePath.slice(0, -1).map(p => `${p.row},${p.col}`),
       ];
-
-      cellsToErase.forEach((key, idx) => {
-        const t = setTimeout(() => {
-          setGameState((s) => {
-            const v = new Set(s.visitedCells);
-            v.delete(key);
-            return { ...s, visitedCells: v };
-          });
-        }, (idx + 1) * CELL_MOVE_MS);
-        eraseTimersRef.current.push(t);
-      });
+      animStepsRef.current = cellsToErase.map(key => ({ key, action: 'remove' as const }));
     } else {
-      setGameState({ ...next, visitedCells: baseVisited });
-
-      // 포인터가 셀에 도착하는 순서대로 추가 — 목적지도 도착 시 하이라이팅
-      next.lastMovePath.forEach((pos, idx) => {
-        const key = `${pos.row},${pos.col}`;
-        const t = setTimeout(() => {
-          setGameState((s) => {
-            const v = new Set(s.visitedCells);
-            v.add(key);
-            return { ...s, visitedCells: v };
-          });
-        }, (idx + 1) * CELL_MOVE_MS);
-        eraseTimersRef.current.push(t);
-      });
+      // 포인터가 셀에 도착하는 순서대로 추가
+      animStepsRef.current = next.lastMovePath.map(p => ({
+        key: `${p.row},${p.col}`,
+        action: 'add' as const,
+      }));
     }
+
+    setGameState({ ...next, visitedCells: baseVisited });
   }, []);
 
   const restart = useCallback(() => {
     eraseTimersRef.current.forEach(clearTimeout);
     eraseTimersRef.current = [];
+    animStepsRef.current = [];
     if (timerRef.current) clearInterval(timerRef.current);
     setGameState(buildInitialState(diff));
   }, [diff]);
@@ -171,6 +165,7 @@ export default function GameScreen() {
               goalPos={gameState.goalPos}
               visitedCells={gameState.visitedCells}
               movePath={gameState.lastMovePath}
+              onAnimationStart={handleAnimationStart}
             />
           </View>
         </GestureDetector>
