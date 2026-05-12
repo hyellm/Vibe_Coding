@@ -10,10 +10,10 @@ interface Props {
 const DIFFICULTIES: Difficulty[] = ['easy', 'normal', 'hard', 'very_hard'];
 
 const ACCENT: Record<Difficulty, string> = {
-  easy: '#00ffa0',
-  normal: '#00aaff',
-  hard: '#ff8800',
-  very_hard: '#ff3366',
+  easy: '#2e7d32',
+  normal: '#388e3c',
+  hard: '#f57c00',
+  very_hard: '#c62828',
 };
 
 export default function DifficultySelector({ selected, onSelect }: Props) {
@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderColor: 'rgba(30,92,40,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.6)',
   },
   row: {
     flexDirection: 'row',
@@ -72,15 +72,15 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#3a4a5a',
+    backgroundColor: '#a5c8a5',
   },
   label: {
-    color: '#8090a0',
+    color: '#3d6b3d',
     fontSize: 16,
     fontWeight: '600',
   },
   size: {
-    color: '#4a5a6a',
+    color: '#5a8a5a',
     fontSize: 13,
     fontWeight: '500',
   },

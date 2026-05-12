@@ -41,11 +41,11 @@ export default function MazeBoard({ maze, playerPos, goalPos, visitedCells }: Pr
                   height: cellSize,
                   top: cell.row * cellSize,
                   left: cell.col * cellSize,
-                  backgroundColor: isVisited ? '#1a2a3a' : '#0d1520',
-                  borderTopWidth: cell.walls.top ? 1.5 : 0,
-                  borderRightWidth: cell.walls.right ? 1.5 : 0,
-                  borderBottomWidth: cell.walls.bottom ? 1.5 : 0,
-                  borderLeftWidth: cell.walls.left ? 1.5 : 0,
+                  backgroundColor: isVisited ? '#d4edda' : '#f8fff8',
+                  borderTopWidth: cell.walls.top ? 2.25 : 0,
+                  borderRightWidth: cell.walls.right ? 2.25 : 0,
+                  borderBottomWidth: cell.walls.bottom ? 2.25 : 0,
+                  borderLeftWidth: cell.walls.left ? 2.25 : 0,
                 },
               ]}
             >
@@ -62,13 +62,13 @@ export default function MazeBoard({ maze, playerPos, goalPos, visitedCells }: Pr
 const styles = StyleSheet.create({
   board: {
     position: 'relative',
-    borderWidth: 2,
-    borderColor: '#2a4a6a',
+    borderWidth: 3,
+    borderColor: '#1e5c28',
     borderRadius: 4,
     overflow: 'hidden',
   },
   cell: {
     position: 'absolute',
-    borderColor: '#1e3a5a',
+    borderColor: '#1e5c28',
   },
 });

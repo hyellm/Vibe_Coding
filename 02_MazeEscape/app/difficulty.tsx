@@ -44,11 +44,11 @@ export default function DifficultyScreen() {
         ]}
       >
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Text style={styles.backText}>← BACK</Text>
+          <Text style={styles.backText}>← 뒤로</Text>
         </TouchableOpacity>
 
         <View style={styles.header}>
-          <Text style={styles.subtitle}>SELECT</Text>
+          <Text style={styles.subtitle}>선택</Text>
           <Text style={styles.title}>DIFFICULTY</Text>
         </View>
 
@@ -60,12 +60,12 @@ export default function DifficultyScreen() {
           style={styles.btnWrapper}
         >
           <LinearGradient
-            colors={['#7b2ff7', '#4a6cf7']}
+            colors={['#2e7d32', '#66bb6a']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.btn}
           >
-            <Text style={styles.btnText}>START →</Text>
+            <Text style={styles.btnText}>시작 →</Text>
           </LinearGradient>
         </TouchableOpacity>
       </Animated.View>
@@ -76,7 +76,7 @@ export default function DifficultyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e1a',
+    backgroundColor: '#e8f5e3',
   },
   content: {
     flex: 1,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   backText: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 13,
     fontWeight: '600',
     letterSpacing: 2,
@@ -97,13 +97,13 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   subtitle: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 11,
     letterSpacing: 4,
     fontWeight: '600',
   },
   title: {
-    color: '#e0ecff',
+    color: '#1a3a1a',
     fontSize: 36,
     fontWeight: '800',
     letterSpacing: 4,
@@ -111,9 +111,9 @@ const styles = StyleSheet.create({
   btnWrapper: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#7b2ff7',
+    shadowColor: '#2e7d32',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 12,
     marginTop: 'auto',

@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -17,7 +10,6 @@ import { movePlayer, saveRecord } from '../utils/gameLogic';
 import MazeBoard from '../components/MazeBoard';
 import GameHeader from '../components/GameHeader';
 
-const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 20;
 
 function buildInitialState(difficulty: Difficulty): GameState {
@@ -44,7 +36,6 @@ export default function GameScreen() {
   const [gameState, setGameState] = useState<GameState>(() => buildInitialState(diff));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 타이머
   useEffect(() => {
     if (gameState.isComplete) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -60,7 +51,6 @@ export default function GameScreen() {
     };
   }, [gameState.isComplete]);
 
-  // 클리어 시 기록 저장 후 화면 이동
   useEffect(() => {
     if (!gameState.isComplete) return;
     saveRecord(diff, gameState.elapsedSeconds, gameState.moves);
@@ -92,7 +82,6 @@ export default function GameScreen() {
     setGameState(buildInitialState(diff));
   }, [diff]);
 
-  // 스와이프 제스처
   const swipe = Gesture.Pan()
     .runOnJS(true)
     .onEnd((e) => {
@@ -133,7 +122,6 @@ export default function GameScreen() {
           </View>
         </GestureDetector>
 
-        {/* 방향 버튼 */}
         <View style={styles.controls}>
           <TouchableOpacity style={styles.dirBtn} onPress={() => move('up')}>
             <Text style={styles.dirText}>▲</Text>
@@ -159,7 +147,7 @@ export default function GameScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e1a',
+    backgroundColor: '#e8f5e3',
   },
   scroll: {
     flexGrow: 1,
@@ -170,7 +158,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   diffLabel: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 11,
     letterSpacing: 4,
     fontWeight: '600',
@@ -193,14 +181,14 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(30,92,40,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   dirText: {
-    color: '#8090b0',
+    color: '#2e7d32',
     fontSize: 18,
   },
   dirCenter: {

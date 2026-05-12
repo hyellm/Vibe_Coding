@@ -12,16 +12,16 @@ export default function GameHeader({ elapsedSeconds, moves, onRestart }: Props) 
   return (
     <View style={styles.container}>
       <View style={styles.stat}>
-        <Text style={styles.label}>TIME</Text>
+        <Text style={styles.label}>시간</Text>
         <Text style={styles.value}>{formatTime(elapsedSeconds)}</Text>
       </View>
 
       <TouchableOpacity style={styles.restartBtn} onPress={onRestart} activeOpacity={0.7}>
-        <Text style={styles.restartText}>↺ RESTART</Text>
+        <Text style={styles.restartText}>↺ 재시작</Text>
       </TouchableOpacity>
 
       <View style={styles.stat}>
-        <Text style={styles.label}>MOVES</Text>
+        <Text style={styles.label}>이동</Text>
         <Text style={styles.value}>{moves}</Text>
       </View>
     </View>
@@ -35,24 +35,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(30,92,40,0.15)',
   },
   stat: {
     alignItems: 'center',
     minWidth: 80,
   },
   label: {
-    color: '#6a8aaa',
+    color: '#3d6b3d',
     fontSize: 10,
     letterSpacing: 2,
     fontWeight: '600',
   },
   value: {
-    color: '#e0f0ff',
+    color: '#1a3a1a',
     fontSize: 16,
     fontWeight: '700',
     marginTop: 2,
@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 10,
-    backgroundColor: 'rgba(120, 80, 200, 0.25)',
+    backgroundColor: 'rgba(30,92,40,0.12)',
     borderWidth: 1,
-    borderColor: 'rgba(150, 100, 230, 0.4)',
+    borderColor: 'rgba(30,92,40,0.25)',
   },
   restartText: {
-    color: '#c0a0ff',
+    color: '#2e7d32',
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 1,

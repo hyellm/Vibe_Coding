@@ -61,7 +61,6 @@ export default function ClearScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 배경 글로우 */}
       <Animated.View style={[styles.bgGlow, { opacity: glowAnim }]} />
 
       <Animated.View
@@ -71,34 +70,32 @@ export default function ClearScreen() {
         ]}
       >
         <Text style={styles.emoji}>🏆</Text>
-        <Text style={styles.title}>STAGE CLEAR!</Text>
+        <Text style={styles.title}>스테이지 클리어!</Text>
         <Text style={styles.diffLabel}>
           {DIFFICULTY_CONFIGS[difficulty].label.toUpperCase()}
         </Text>
 
         <View style={styles.divider} />
 
-        {/* 결과 */}
         <View style={styles.results}>
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>TIME</Text>
+            <Text style={styles.statLabel}>시간</Text>
             <Text style={styles.statValue}>{formatTime(time)}</Text>
           </View>
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>MOVES</Text>
+            <Text style={styles.statLabel}>이동 횟수</Text>
             <Text style={styles.statValue}>{moves}</Text>
           </View>
         </View>
 
-        {/* 최고 기록 */}
         {best && (
           <View style={styles.bestBox}>
             <Text style={styles.bestLabel}>
-              {isBestTime ? '🎉 NEW BEST RECORD!' : 'BEST'}
+              {isBestTime ? '🎉 최고 기록 갱신!' : '최고 기록'}
             </Text>
             {!isBestTime && (
               <Text style={styles.bestValue}>
-                {formatTime(best.time)} · {best.moves} moves
+                {formatTime(best.time)} · {best.moves}회
               </Text>
             )}
           </View>
@@ -106,7 +103,6 @@ export default function ClearScreen() {
 
         <View style={styles.divider} />
 
-        {/* 버튼 */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() =>
@@ -115,12 +111,12 @@ export default function ClearScreen() {
           style={styles.btnWrapper}
         >
           <LinearGradient
-            colors={['#7b2ff7', '#4a6cf7']}
+            colors={['#2e7d32', '#66bb6a']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.btn}
           >
-            <Text style={styles.btnText}>PLAY AGAIN</Text>
+            <Text style={styles.btnText}>다시 플레이</Text>
           </LinearGradient>
         </TouchableOpacity>
 
@@ -129,7 +125,7 @@ export default function ClearScreen() {
           onPress={() => router.replace('/')}
           activeOpacity={0.7}
         >
-          <Text style={styles.menuText}>MAIN MENU</Text>
+          <Text style={styles.menuText}>메인 메뉴</Text>
         </TouchableOpacity>
       </Animated.View>
     </SafeAreaView>
@@ -139,7 +135,7 @@ export default function ClearScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e1a',
+    backgroundColor: '#e8f5e3',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -149,14 +145,14 @@ const styles = StyleSheet.create({
     width: width,
     height: width,
     borderRadius: width / 2,
-    backgroundColor: 'rgba(0, 255, 160, 0.06)',
+    backgroundColor: 'rgba(46, 125, 50, 0.08)',
   },
   card: {
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(255,255,255,0.8)',
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(30,92,40,0.15)',
     padding: 28,
     alignItems: 'center',
     gap: 16,
@@ -165,13 +161,13 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   title: {
-    color: '#e0ecff',
+    color: '#1a3a1a',
     fontSize: 28,
     fontWeight: '800',
-    letterSpacing: 4,
+    letterSpacing: 2,
   },
   diffLabel: {
-    color: '#7b5cf7',
+    color: '#2e7d32',
     fontSize: 12,
     letterSpacing: 3,
     fontWeight: '600',
@@ -179,7 +175,7 @@ const styles = StyleSheet.create({
   divider: {
     width: '100%',
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(30,92,40,0.1)',
   },
   results: {
     width: '100%',
@@ -191,13 +187,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 12,
     letterSpacing: 2,
     fontWeight: '600',
   },
   statValue: {
-    color: '#e0ecff',
+    color: '#1a3a1a',
     fontSize: 20,
     fontWeight: '700',
   },
@@ -206,22 +202,22 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   bestLabel: {
-    color: '#00ffa0',
+    color: '#2e7d32',
     fontSize: 13,
     fontWeight: '700',
     letterSpacing: 1,
   },
   bestValue: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 13,
   },
   btnWrapper: {
     width: '100%',
     borderRadius: 14,
     overflow: 'hidden',
-    shadowColor: '#7b2ff7',
+    shadowColor: '#2e7d32',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 10,
   },
@@ -240,7 +236,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   menuText: {
-    color: '#4a6aaa',
+    color: '#3d6b3d',
     fontSize: 13,
     fontWeight: '600',
     letterSpacing: 2,

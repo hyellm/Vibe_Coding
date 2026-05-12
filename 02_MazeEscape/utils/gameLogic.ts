@@ -1,20 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Direction, Difficulty, GameState, Position, Records, BestRecord } from '../types/game';
+import { Direction, Difficulty, GameState, Position, Records, BestRecord, Cell } from '../types/game';
 
 const STORAGE_KEY = 'maze_escape_records';
 const LAST_DIFFICULTY_KEY = 'maze_escape_last_difficulty';
 
-export function canMove(state: GameState, direction: Direction): boolean {
-  const { maze, playerPos } = state;
-  const { row, col } = playerPos;
-  const cell = maze[row][col];
-
+function getWall(cell: Cell, direction: Direction): boolean {
   switch (direction) {
-    case 'up':    return !cell.walls.top;
-    case 'down':  return !cell.walls.bottom;
-    case 'left':  return !cell.walls.left;
-    case 'right': return !cell.walls.right;
+    case 'up':    return cell.walls.top;
+    case 'down':  return cell.walls.bottom;
+    case 'left':  return cell.walls.left;
+    case 'right': return cell.walls.right;
   }
+}
+
+export function canMove(state: GameState, direction: Direction): boolean {
+  const cell = state.maze[state.playerPos.row][state.playerPos.col];
+  return !getWall(cell, direction);
 }
 
 export function getNextPosition(pos: Position, direction: Direction): Position {
@@ -27,19 +28,38 @@ export function getNextPosition(pos: Position, direction: Direction): Position {
 }
 
 export function movePlayer(state: GameState, direction: Direction): GameState {
-  if (!canMove(state, direction)) return state;
+  const perp: Direction[] = (direction === 'up' || direction === 'down')
+    ? ['left', 'right']
+    : ['up', 'down'];
 
-  const nextPos = getNextPosition(state.playerPos, direction);
-  const cellKey = `${nextPos.row},${nextPos.col}`;
+  let currentPos = state.playerPos;
+  let targetPos: Position | null = null;
   const newVisited = new Set(state.visitedCells);
-  newVisited.add(cellKey);
+
+  while (true) {
+    const cell = state.maze[currentPos.row][currentPos.col];
+    if (getWall(cell, direction)) break;
+
+    const nextPos = getNextPosition(currentPos, direction);
+    newVisited.add(`${nextPos.row},${nextPos.col}`);
+    targetPos = nextPos;
+    currentPos = nextPos;
+
+    if (nextPos.row === state.goalPos.row && nextPos.col === state.goalPos.col) break;
+
+    const nextCell = state.maze[nextPos.row][nextPos.col];
+    const isCrossroads = perp.some(d => !getWall(nextCell, d));
+    if (isCrossroads) break;
+  }
+
+  if (!targetPos) return state;
 
   const isComplete =
-    nextPos.row === state.goalPos.row && nextPos.col === state.goalPos.col;
+    targetPos.row === state.goalPos.row && targetPos.col === state.goalPos.col;
 
   return {
     ...state,
-    playerPos: nextPos,
+    playerPos: targetPos,
     moves: state.moves + 1,
     visitedCells: newVisited,
     isComplete,
@@ -49,7 +69,7 @@ export function movePlayer(state: GameState, direction: Direction): GameState {
 export function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
-  return `${m}m ${s}s`;
+  return `${m}분 ${s}초`;
 }
 
 export async function loadRecords(): Promise<Records> {
