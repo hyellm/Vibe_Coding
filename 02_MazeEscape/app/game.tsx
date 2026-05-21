@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
-import { Difficulty, Direction, GameState, DIFFICULTY_CONFIGS, CELL_MOVE_MS } from '../types/game';
+import { Difficulty, Direction, GameState, DIFFICULTY_CONFIGS } from '../types/game';
 import { generateMaze } from '../utils/mazeGenerator';
 import { movePlayer, saveRecord } from '../utils/gameLogic';
 import MazeBoard from '../components/MazeBoard';
@@ -38,12 +38,12 @@ export default function GameScreen() {
 
   const [gameState, setGameState] = useState<GameState>(() => buildInitialState(diff));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const eraseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const gameStateRef = useRef(gameState);
   gameStateRef.current = gameState;
-  const animStepsRef = useRef<{ key: string; action: 'add' | 'remove' }[]>([]);
-
-  useEffect(() => () => { eraseTimersRef.current.forEach(clearTimeout); }, []);
+  const isAnimatingRef = useRef(false);
+  const pendingDirectionRef = useRef<Direction | null>(null);
+  // isBacktrack: true=remove cells, false=add cells; cells: ordered keys to update per step
+  const trailUpdateRef = useRef<{ isBacktrack: boolean; cells: string[] } | null>(null);
 
   useEffect(() => {
     if (gameState.isComplete) {
@@ -76,55 +76,85 @@ export default function GameScreen() {
     return () => clearTimeout(timeout);
   }, [gameState.isComplete]);
 
-  // useEffect(onAnimationStart) 시점 기준으로 타이머 시작 → 포인터 도착 타이밍과 일치
-  const handleAnimationStart = useCallback(() => {
-    eraseTimersRef.current.forEach(clearTimeout);
-    eraseTimersRef.current = [];
-    animStepsRef.current.forEach(({ key, action }, idx) => {
-      const t = setTimeout(() => {
-        setGameState((s) => {
-          const v = new Set(s.visitedCells);
-          if (action === 'add') v.add(key);
-          else v.delete(key);
-          return { ...s, visitedCells: v };
-        });
-      }, (idx + 1) * CELL_MOVE_MS);
-      eraseTimersRef.current.push(t);
-    });
+  // Called by MazeBoard each time a single step animation completes.
+  // stepIdx = index of movePath that just finished (pointer just arrived at movePath[stepIdx]).
+  // For forward move: add trail for the cell the pointer just LEFT (movePath[stepIdx-1]).
+  // For backtrack: remove trail for the cell the pointer just LEFT (cells[stepIdx]).
+  const handleStepComplete = useCallback((stepIdx: number) => {
+    const info = trailUpdateRef.current;
+    if (!info) return;
+    if (info.isBacktrack) {
+      const key = info.cells[stepIdx];
+      if (!key) return;
+      setGameState(s => {
+        const v = new Set(s.visitedCells);
+        v.delete(key);
+        return { ...s, visitedCells: v };
+      });
+    } else {
+      if (stepIdx === 0) return;
+      const key = info.cells[stepIdx - 1];
+      if (!key) return;
+      setGameState(s => {
+        const v = new Set(s.visitedCells);
+        v.add(key);
+        return { ...s, visitedCells: v };
+      });
+    }
   }, []);
 
+  const moveRef = useRef<(direction: Direction) => void>();
+
   const move = useCallback((direction: Direction) => {
+    if (isAnimatingRef.current) {
+      pendingDirectionRef.current = direction;
+      return;
+    }
+
     const prev = gameStateRef.current;
+    if (prev.isComplete) return;
     const next = movePlayer(prev, direction);
     if (next === prev) return;
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    isAnimatingRef.current = true;
+    pendingDirectionRef.current = null;
 
     const isBacktrack = next.pathHistory.length < prev.pathHistory.length;
     const baseVisited = new Set(prev.pathHistory);
 
     if (isBacktrack) {
-      // 포인터가 셀을 떠나는 순서대로 제거 — 현재 위치부터, 목적지는 유지
       const cellsToErase = [
         `${prev.playerPos.row},${prev.playerPos.col}`,
         ...next.lastMovePath.slice(0, -1).map(p => `${p.row},${p.col}`),
       ];
-      animStepsRef.current = cellsToErase.map(key => ({ key, action: 'remove' as const }));
+      trailUpdateRef.current = { isBacktrack: true, cells: cellsToErase };
     } else {
-      // 포인터가 셀에 도착하는 순서대로 추가
-      animStepsRef.current = next.lastMovePath.map(p => ({
-        key: `${p.row},${p.col}`,
-        action: 'add' as const,
-      }));
+      trailUpdateRef.current = {
+        isBacktrack: false,
+        cells: next.lastMovePath.map(p => `${p.row},${p.col}`),
+      };
     }
 
     setGameState({ ...next, visitedCells: baseVisited });
   }, []);
 
+  moveRef.current = move;
+
+  const handleAnimationComplete = useCallback(() => {
+    isAnimatingRef.current = false;
+    setGameState(s => ({ ...s, visitedCells: new Set(s.pathHistory) }));
+    const pending = pendingDirectionRef.current;
+    if (pending !== null) {
+      pendingDirectionRef.current = null;
+      moveRef.current?.(pending);
+    }
+  }, []);
+
   const restart = useCallback(() => {
-    eraseTimersRef.current.forEach(clearTimeout);
-    eraseTimersRef.current = [];
-    animStepsRef.current = [];
+    trailUpdateRef.current = null;
+    isAnimatingRef.current = false;
+    pendingDirectionRef.current = null;
     if (timerRef.current) clearInterval(timerRef.current);
     setGameState(buildInitialState(diff));
   }, [diff]);
@@ -163,9 +193,11 @@ export default function GameScreen() {
               maze={gameState.maze}
               playerPos={gameState.playerPos}
               goalPos={gameState.goalPos}
+              startPos={gameState.startPos}
               visitedCells={gameState.visitedCells}
               movePath={gameState.lastMovePath}
-              onAnimationStart={handleAnimationStart}
+              onStepComplete={handleStepComplete}
+              onAnimationComplete={handleAnimationComplete}
             />
           </View>
         </GestureDetector>
