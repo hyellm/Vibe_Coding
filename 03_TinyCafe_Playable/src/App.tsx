@@ -4,8 +4,8 @@ import { useGameStore } from './store/gameStore';
 import HUD from './components/HUD';
 import MissionBar from './components/MissionBar';
 import CafeView from './components/CafeView';
-import BottomBar from './components/BottomBar';
-import ShopModal from './components/ShopModal';
+import CoinSlotBar from './components/CoinSlotBar';
+import UpgradeModal from './components/UpgradeModal';
 
 function OfflinePopup() {
   const popup = useGameStore(s => s.offlinePopup);
@@ -38,13 +38,11 @@ function OfflinePopup() {
               열심히 일했어요!
             </div>
             <div className="text-yellow-300 font-bold text-center" style={{ fontSize: 14 }}>
-              자리를 비운 동안
-              <br />
+              자리를 비운 동안<br />
               <span className="font-black" style={{ fontSize: 22 }}>
                 +{popup.coins.toLocaleString()}🪙
               </span>
-              <br />
-              코인을 벌었습니다
+              <br />코인을 벌었습니다
             </div>
             <motion.button
               className="w-full py-3 rounded-2xl font-black text-white"
@@ -66,27 +64,10 @@ function OfflinePopup() {
   );
 }
 
-function PlaceholderTab({ title, icon }: { title: string; icon: string }) {
-  return (
-    <div
-      className="flex-1 flex flex-col items-center justify-center gap-3"
-      style={{ background: 'linear-gradient(180deg,#2A1208,#1A0A04)' }}
-    >
-      <span style={{ fontSize: 60 }}>{icon}</span>
-      <div className="text-white font-black" style={{ fontSize: 20 }}>{title}</div>
-      <div className="text-yellow-400 font-bold text-center px-8" style={{ fontSize: 13 }}>
-        P2에서 구현 예정
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const tick = useGameStore(s => s.tick);
-  const activeTab = useGameStore(s => s.activeTab);
   const lastTimeRef = useRef(Date.now());
 
-  // ── Game loop ──────────────────────────────────────────────────
   useEffect(() => {
     lastTimeRef.current = Date.now();
     const id = setInterval(() => {
@@ -107,30 +88,21 @@ export default function App() {
         fontFamily: "'Nunito', sans-serif",
         overflow: 'hidden',
         position: 'relative',
+        background: '#2A1408',
       }}
     >
-      {/* Fixed top section */}
+      {/* Fixed top UI */}
       <HUD />
       <MissionBar />
 
-      {/* Content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {activeTab === 'home' ? (
-          <CafeView />
-        ) : activeTab === 'branches' ? (
-          <PlaceholderTab title="지점 관리" icon="🌿" />
-        ) : activeTab === 'managers' ? (
-          <PlaceholderTab title="매니저" icon="👔" />
-        ) : activeTab === 'catbook' ? (
-          <PlaceholderTab title="캣북" icon="📖" />
-        ) : null}
-      </div>
+      {/* Game view: window zone + counter + cafe interior */}
+      <CafeView />
 
-      {/* Bottom bar */}
-      <BottomBar />
+      {/* Bottom coin collection bar */}
+      <CoinSlotBar />
 
       {/* Overlays */}
-      <ShopModal />
+      <UpgradeModal />
       <OfflinePopup />
     </div>
   );

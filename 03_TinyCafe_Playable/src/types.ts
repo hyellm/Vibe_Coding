@@ -10,57 +10,51 @@ export interface Equipment {
   name: string;
   emoji: string;
   maxLevel: number;
-  baseProductionTime: number;
+  baseProductionTime: number; // seconds
   productName: string;
   productEmoji: string;
   baseCoinsPerItem: number;
   baseUpgradeCost: number;
   heartsOnUpgrade: number;
   unlockCost: number;
-  position: { x: number; y: number };
   level: number;
-  productionProgress: number;
-  itemsReady: number;
+  productionProgress: number; // ms elapsed
 }
 
 export interface Worker {
   id: string;
-  name: string;
-  currentX: number;
-  currentY: number;
-  targetX: number;
-  targetY: number;
-  walkStartX: number;
-  walkStartY: number;
-  state: 'idle' | 'walking_to_equipment' | 'at_equipment' | 'walking_to_showcase';
+  equipmentId: string | null; // which machine they're stationed at
+  state: 'idle' | 'working';
   stateTimer: number;
-  facingLeft: boolean;
-  carrying: string | null;
-  assignedEquipmentId: string | null;
-  _deliverEquipmentId?: string;
 }
+
+export type CustomerType = 'nabi' | 'luna' | 'mocha';
+export type CustomerState =
+  | 'walking_in'
+  | 'at_window'
+  | 'brewing'
+  | 'drinking'
+  | 'satisfied'
+  | 'sad'
+  | 'walking_out';
 
 export interface Customer {
   id: string;
-  emoji: string;
+  type: CustomerType;
   name: string;
   x: number;
-  y: number;
-  targetX: number;
-  state: 'entering' | 'at_showcase' | 'sitting' | 'leaving';
+  state: CustomerState;
   stateTimer: number;
-  purchasedEmoji: string | null;
-  coinsEarned: number;
-  tableX: number;
-  color: string;
+  desiredMenuId: string;
+  desiredEmoji: string;
+  waitTimeout: number;
 }
 
-export interface ShowcaseSlot {
-  equipmentId: string;
-  productEmoji: string;
-  productName: string;
-  coinsPerItem: number;
-  count: number;
+export interface CoinSlot {
+  id: string;
+  drinkEmoji: string;
+  amount: number;
+  createdAt: number;
 }
 
 export interface CoinFX {
