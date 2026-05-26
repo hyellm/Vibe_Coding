@@ -162,6 +162,19 @@ body {
   100% { background-position: 200% 0; }
 }
 
+@keyframes brew-blink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 12px rgba(46,204,113,0.3); }
+  50%       { opacity: 0.25; box-shadow: 0 0 30px rgba(46,204,113,1.0); }
+}
+
+.brew-blink {
+  animation: brew-blink 0.8s ease-in-out infinite;
+}
+.brew-blink:active {
+  opacity: 0.75 !important;
+  animation-play-state: paused;
+}
+
 .bounce-anim { animation: bounce-idle 2s ease-in-out infinite; }
 .wobble-anim { animation: wobble-work 0.5s ease-in-out infinite; }
 .pulse-glow-anim { animation: pulse-glow 1.4s ease-in-out infinite; }

@@ -284,7 +284,7 @@ export const useGameStore = create<GameState & GameActions>()(
             if (c.state === 'walking_in') {
               const WALK_MS = 2200;
               const t = Math.min(timer / WALK_MS, 1);
-              const CENTER_X = 150;
+              const CENTER_X = 195;
               const startX = c.direction === 'right' ? -130 : 480;
               const x = startX + (CENTER_X - startX) * t;
               if (timer >= WALK_MS) {
@@ -323,7 +323,7 @@ export const useGameStore = create<GameState & GameActions>()(
             if (c.state === 'walking_out') {
               const WALK_MS = 2000;
               const t = Math.min(timer / WALK_MS, 1);
-              const CENTER_X = 150;
+              const CENTER_X = 195;
               // 진입 방향과 동일한 방향으로 직선 퇴장
               const exitX = c.direction === 'right' ? 480 : -130;
               const x = CENTER_X + (exitX - CENTER_X) * t;

@@ -255,34 +255,24 @@ function BrewButton() {
   const dashoffset = circ * (1 - brewPct);
 
   return (
-    <motion.button
-      className="relative flex items-center justify-center rounded-full"
+    <button
+      className={`relative flex items-center justify-center rounded-full${isPulsing && canBrew ? ' brew-blink' : ''}`}
       style={{
         width: 62,
         height: 62,
         background: 'linear-gradient(135deg,#27AE60,#1E8449)',
         border: '3px solid rgba(255,255,255,0.4)',
-        boxShadow: '0 4px 16px rgba(46,204,113,0.5)',
+        boxShadow: '0 0 12px rgba(46,204,113,0.3)',
         cursor: isPulsing && canBrew ? 'pointer' : 'default',
         outline: 'none',
       }}
-      animate={isPulsing && canBrew ? {
-        boxShadow: [
-          '0 4px 16px rgba(46,204,113,0.5)',
-          '0 4px 28px rgba(46,204,113,0.9)',
-          '0 4px 16px rgba(46,204,113,0.5)',
-        ],
-        scale: [1, 1.06, 1],
-      } : {}}
-      transition={{ repeat: Infinity, duration: 1.2 }}
-      whileTap={canBrew ? { scale: 0.9 } : {}}
       onClick={isPulsing && canBrew ? tapBrew : undefined}
     >
       {/* Brew arc progress */}
       {isBrewing && (
         <svg
           width={62} height={62}
-          style={{ position: 'absolute', top: 0, left: 0 }}
+          style={{ position: 'absolute', top: -3, left: -3 }}
         >
           <circle
             cx={31} cy={31} r={R}
@@ -313,23 +303,11 @@ function BrewButton() {
         <path d="M10 8 Q14 4 18 8" stroke="white" strokeWidth={2} fill="none" strokeLinecap="round" />
       </svg>
 
-      {/* "주문" label when ready to brew */}
-      {isPulsing && canBrew && (
-        <motion.div
-          className="absolute -bottom-5 left-1/2 font-black text-white rounded-full px-2"
-          style={{ fontSize: 9, transform: 'translateX(-50%)', background: '#1E8449', whiteSpace: 'nowrap' }}
-          animate={{ opacity: [0.7, 1, 0.7] }}
-          transition={{ repeat: Infinity, duration: 1 }}
-        >
-          탭!
-        </motion.div>
-      )}
-
       {/* Lock indicator if equipment not unlocked */}
       {waitingCustomer && !canBrew && (
         <div className="absolute -top-1 -right-1" style={{ fontSize: 14 }}>🔒</div>
       )}
-    </motion.button>
+    </button>
   );
 }
 
@@ -346,58 +324,107 @@ function WindowZone() {
       {/* Brick wall background */}
       <div className="absolute inset-0 brick-wall" />
 
-      {/* Sky visible through top gap */}
-      <div
-        className="absolute"
-        style={{ top: 0, left: 0, right: 0, height: 12, background: '#B8CCE0' }}
-      />
-
-      {/* Large arched window frame — 좌우 60px 여백으로 좁게 */}
+      {/* Large arched window — city background (border-only frame added after overlays) */}
       <div
         className="absolute"
         style={{
           left: 60, right: 60,
           top: 8, bottom: 0,
           borderRadius: '80px 80px 0 0',
-          border: '6px solid #6A4820',
-          borderBottom: 'none',
           overflow: 'hidden',
           background: 'transparent',
         }}
       >
-        {/* City blur background inside glass */}
-        <div className="absolute inset-0 city-bg" />
+        {/* === City Street Background === */}
 
-        {/* Blurry buildings */}
-        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 160 }}>
-          <div className="absolute" style={{ left: 0, bottom: 0, width: 45, height: 120, background: '#7090A8', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-          <div className="absolute" style={{ left: 35, bottom: 0, width: 35, height: 90, background: '#8098A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
-          <div className="absolute" style={{ left: 65, bottom: 0, width: 55, height: 140, background: '#6888A0', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-          <div className="absolute" style={{ right: 0, bottom: 0, width: 40, height: 100, background: '#7898A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
-          <div className="absolute" style={{ right: 35, bottom: 0, width: 50, height: 160, background: '#6080A0', borderRadius: '4px 4px 0 0', opacity: 0.7 }} />
+        {/* Sky gradient */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #4E9FCE 0%, #73BBDF 20%, #9CCDE8 50%, #C0E2F2 75%, #D8EDF8 100%)' }} />
+
+        {/* Hazy far buildings */}
+        <div className="absolute" style={{ bottom: 100, left: 0, right: 0, display: 'flex', alignItems: 'flex-end', flexWrap: 'nowrap', overflow: 'hidden' }}>
+          {[
+            { w: 58, h: 62 }, { w: 38, h: 50 }, { w: 68, h: 80 },
+            { w: 32, h: 54 }, { w: 52, h: 72 }, { w: 44, h: 55 },
+          ].map((b, i) => (
+            <div key={i} style={{ width: b.w, height: b.h, flexShrink: 0, background: `rgba(148,178,202,${0.36 + i * 0.02})`, borderRadius: '3px 3px 0 0' }} />
+          ))}
         </div>
 
-        {/* Glass sheen effect */}
-        <div
-          className="absolute"
-          style={{
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%)',
-            pointerEvents: 'none',
-          }}
-        />
-
-        {/* 고양이 손님 컨테이너 — left:-60 으로 화면 전체 폭 확보, overflow:visible 로 창문 밖 이동 구현 */}
-        <div className="absolute" style={{ left: -60, right: -60, bottom: 22, height: 240, overflow: 'visible' }}>
-          <AnimatePresence>
-            {customers.map(c => (
-              <CatCustomer key={c.id} customer={c} />
-            ))}
-          </AnimatePresence>
+        {/* Main building — left */}
+        <div className="absolute" style={{ left: 0, bottom: 95, width: 70, height: 178, background: '#7A8EA0', borderRadius: '4px 4px 0 0' }}>
+          <div style={{ height: 10, background: 'rgba(0,0,0,0.2)', borderRadius: '4px 4px 0 0' }} />
+          {Array.from({ length: 5 }, (_, r) => Array.from({ length: 2 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
+            <div key={i} style={{ position: 'absolute', left: 9 + col * 32, top: 16 + r * 32, width: 20, height: 23, background: i === 6 ? 'rgba(255,240,148,0.88)' : 'rgba(178,210,240,0.58)', border: '1.5px solid rgba(78,105,125,0.38)', borderRadius: 2 }} />
+          ))}
         </div>
+
+        {/* Main building — center */}
+        <div className="absolute" style={{ left: 73, bottom: 95, width: 88, height: 215, background: '#8A9EAF', borderRadius: '5px 5px 0 0' }}>
+          <div style={{ height: 12, background: 'rgba(0,0,0,0.2)', borderRadius: '5px 5px 0 0' }} />
+          {Array.from({ length: 6 }, (_, r) => Array.from({ length: 3 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
+            <div key={i} style={{ position: 'absolute', left: 8 + col * 27, top: 18 + r * 32, width: 18, height: 21, background: [4, 11, 14].includes(i) ? 'rgba(255,242,155,0.85)' : 'rgba(172,205,238,0.55)', border: '1.5px solid rgba(80,108,130,0.35)', borderRadius: 2 }} />
+          ))}
+        </div>
+
+        {/* Main building — right */}
+        <div className="absolute" style={{ right: 0, bottom: 95, width: 62, height: 158, background: '#728294', borderRadius: '4px 4px 0 0' }}>
+          <div style={{ height: 9, background: 'rgba(0,0,0,0.2)', borderRadius: '4px 4px 0 0' }} />
+          {Array.from({ length: 4 }, (_, r) => Array.from({ length: 2 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
+            <div key={i} style={{ position: 'absolute', left: 8 + col * 30, top: 15 + r * 32, width: 19, height: 23, background: i === 3 ? 'rgba(255,243,158,0.85)' : 'rgba(176,208,238,0.58)', border: '1.5px solid rgba(74,100,120,0.38)', borderRadius: 2 }} />
+          ))}
+        </div>
+
+        {/* Far sidewalk (across street) */}
+        <div className="absolute" style={{ bottom: 87, left: 0, right: 0, height: 8, background: '#9AA2AA' }} />
+
+        {/* Road */}
+        <div className="absolute" style={{ bottom: 42, left: 0, right: 0, height: 45, background: '#5C6470' }}>
+          <div style={{ position: 'absolute', top: '48%', left: 0, right: 0, borderTop: '2px dashed rgba(255,255,255,0.32)', transform: 'translateY(-50%)' }} />
+        </div>
+
+        {/* Curb */}
+        <div className="absolute" style={{ bottom: 38, left: 0, right: 0, height: 4, background: '#8892A0' }} />
+
+        {/* Near sidewalk (where cat walks) */}
+        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 38, background: 'linear-gradient(180deg,#B4B0A8 0%,#C2BEB6 100%)' }}>
+          <div style={{ position: 'absolute', top: 11, left: 0, right: 0, borderTop: '1px solid rgba(0,0,0,0.1)' }} />
+          <div style={{ position: 'absolute', top: 23, left: 0, right: 0, borderTop: '1px solid rgba(0,0,0,0.07)' }} />
+        </div>
+
+        {/* Window glass sheen */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(140deg, rgba(255,255,255,0.13) 0%, transparent 55%)', pointerEvents: 'none' }} />
       </div>
 
-      {/* Window frame outer shadow */}
+
+      {/* Window sill / ledge — z:25 so it appears above cat and wall overlays */}
+      <div
+        className="absolute bottom-0 left-0 right-0"
+        style={{ height: 22, background: 'linear-gradient(180deg,#8B6240,#6A4820)', zIndex: 25 }}
+      />
+
+      {/* Pendant lamp */}
+      <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)' }}>
+        <div style={{ width: 3, height: 20, background: '#5A3A20', margin: '0 auto' }} />
+        <div style={{ width: 28, height: 18, borderRadius: '4px 4px 50% 50%', background: '#E8D0A0', border: '2px solid #C0A060', boxShadow: '0 4px 12px rgba(255,220,100,0.4)' }} />
+      </div>
+
+      {/* 고양이 손님 컨테이너 — arch window 밖에 배치해 overflow 클리핑 방지 */}
+      <div
+        className="absolute"
+        style={{ left: 0, right: 0, bottom: 0, height: 260, overflow: 'visible', zIndex: 15, pointerEvents: 'none' }}
+      >
+        <AnimatePresence>
+          {customers.map(c => (
+            <CatCustomer key={c.id} customer={c} />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* 벽돌 오버레이 — 창문 바깥 영역(좌우 벽)에서 고양이를 가림 */}
+      <div className="absolute brick-wall" style={{ top: 0, left: 0, width: 66, bottom: 0, zIndex: 20, pointerEvents: 'none' }} />
+      <div className="absolute brick-wall" style={{ top: 0, right: 0, width: 66, bottom: 0, zIndex: 20, pointerEvents: 'none' }} />
+
+      {/* Window frame outer shadow — z:21 so it renders above brick overlays */}
       <div
         className="absolute"
         style={{
@@ -407,40 +434,23 @@ function WindowZone() {
           border: '10px solid #3A2808',
           borderBottom: 'none',
           pointerEvents: 'none',
+          zIndex: 21,
         }}
       />
 
-      {/* Window sill / ledge */}
+      {/* Window frame inner border — z:22, border only (no overflow/background) */}
       <div
-        className="absolute bottom-0 left-0 right-0"
-        style={{ height: 22, background: 'linear-gradient(180deg,#8B6240,#6A4820)' }}
+        className="absolute"
+        style={{
+          left: 60, right: 60,
+          top: 8, bottom: 0,
+          borderRadius: '80px 80px 0 0',
+          border: '6px solid #6A4820',
+          borderBottom: 'none',
+          pointerEvents: 'none',
+          zIndex: 22,
+        }}
       />
-
-      {/* Counter shelf items — 창문 안쪽에 위치 */}
-      <div className="absolute" style={{ bottom: 8, left: 76, display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        <div style={{
-          width: 22, height: 30,
-          borderRadius: '3px 3px 5px 5px',
-          background: 'rgba(180,220,255,0.6)',
-          border: '2px solid rgba(100,160,220,0.7)',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'flex-end',
-          paddingBottom: 3,
-          overflow: 'hidden',
-        }}>
-          <div style={{ fontSize: 6, fontWeight: 900, color: '#4080B0' }}>TIPS</div>
-          <div style={{ fontSize: 9 }}>🪙</div>
-        </div>
-        <div style={{ width: 20, height: 20, borderRadius: '3px 3px 6px 6px', background: '#F5F0E8', border: '2px solid #D4C0A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
-          ☕
-        </div>
-      </div>
-
-      {/* Pendant lamp */}
-      <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)' }}>
-        <div style={{ width: 3, height: 20, background: '#5A3A20', margin: '0 auto' }} />
-        <div style={{ width: 28, height: 18, borderRadius: '4px 4px 50% 50%', background: '#E8D0A0', border: '2px solid #C0A060', boxShadow: '0 4px 12px rgba(255,220,100,0.4)' }} />
-      </div>
     </div>
   );
 }
@@ -505,29 +515,35 @@ function CafeInterior() {
         }}
       />
 
-      {/* Equipment row */}
+      {/* Equipment row — each machine with its worker directly below */}
       <div
-        className="absolute flex items-end gap-4 px-4"
-        style={{ top: 10, left: 0, right: 0, zIndex: 3 }}
+        className="absolute flex items-start gap-4 px-4"
+        style={{ top: 10, left: 0, right: 0, zIndex: 4 }}
       >
-        {/* Drip coffee - always shown (starts at lv1) */}
-        <button
-          onClick={() => openUpgrade('drip_coffee')}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-        >
-          <HandDripSVG level={drip.level} progress={dripProg} />
-        </button>
-
-        {/* Espresso machine - shown if unlocked */}
-        {espresso && espresso.level > 0 ? (
+        {/* Drip coffee + worker */}
+        <div className="flex flex-col items-center">
           <button
-            onClick={() => openUpgrade('espresso_machine')}
+            onClick={() => openUpgrade('drip_coffee')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
-            <EspressoSVG level={espresso.level} progress={espProg} />
+            <HandDripSVG level={drip.level} progress={dripProg} />
           </button>
+          <WorkerMouse isWorking={dripProg > 0 && dripProg < 1} />
+        </div>
+
+        {/* Espresso machine + worker */}
+        {espresso && espresso.level > 0 ? (
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => openUpgrade('espresso_machine')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <EspressoSVG level={espresso.level} progress={espProg} />
+            </button>
+            <WorkerMouse isWorking={espProg > 0 && espProg < 1} />
+          </div>
         ) : (
-          /* Locked slot */
+          /* Locked slot — no worker */
           <button
             onClick={() => openUpgrade('espresso_machine')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
@@ -549,17 +565,6 @@ function CafeInterior() {
         )}
       </div>
 
-      {/* Worker mice at equipment */}
-      <div
-        className="absolute flex gap-2 items-end"
-        style={{ top: 100, left: 16, zIndex: 4 }}
-      >
-        <WorkerMouse isWorking={dripProg > 0 && dripProg < 1} />
-        {espresso && espresso.level > 0 && (
-          <WorkerMouse isWorking={espProg > 0 && espProg < 1} />
-        )}
-      </div>
-
       {/* Counter divider below shelf */}
       <div
         className="absolute counter-wood"
@@ -569,7 +574,7 @@ function CafeInterior() {
       {/* Dolce + brew button area */}
       <div
         className="absolute flex flex-col items-center"
-        style={{ top: 148, left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}
+        style={{ top: 148, left: 0, right: 0, zIndex: 10 }}
       >
         <BrewButton />
         <div style={{ marginTop: 8 }}>
@@ -640,14 +645,14 @@ function CafeInterior() {
         style={{ bottom: 0, left: 0, right: 0, height: '40%', zIndex: 0 }}
       />
 
-      {/* Floor shadow near counter */}
+      {/* Floor shadow below shelf */}
       <div
         className="absolute"
         style={{
-          top: 148,
+          top: 130,
           left: 0, right: 0,
-          height: 16,
-          background: 'linear-gradient(180deg,rgba(0,0,0,0.12),transparent)',
+          height: 20,
+          background: 'linear-gradient(180deg,rgba(0,0,0,0.14),transparent)',
           zIndex: 3,
           pointerEvents: 'none',
         }}
