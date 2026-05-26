@@ -69,16 +69,9 @@ const EQUIPMENT_TEMPLATES: Omit<Equipment, 'level' | 'productionProgress'>[] = [
   },
 ];
 
-const CUSTOMER_NAMES: Record<CustomerType, string> = {
-  nabi: '나비',
-  luna: '루나',
-  mocha: '모카',
-};
-
 const CUSTOMER_DESIRED: Record<CustomerType, string> = {
-  nabi: 'drip_coffee',
-  luna: 'espresso_machine',
-  mocha: 'drip_coffee',
+  cat1: 'drip_coffee',
+  cat2: 'espresso_machine',
 };
 
 const INITIAL_MISSIONS: Mission[] = [
@@ -231,21 +224,27 @@ export const useGameStore = create<GameState & GameActions>()(
           ) {
             newCustomerTimer = 0;
             newNextInterval = 5000 + Math.random() * 5000;
-            const types: CustomerType[] = ['nabi', 'luna', 'mocha'];
+            const types: CustomerType[] = ['cat1', 'cat2'];
             const type = types[Math.floor(Math.random() * types.length)];
+            const direction: 'left' | 'right' = Math.random() < 0.5 ? 'right' : 'left';
             const preferredId = CUSTOMER_DESIRED[type];
             const preferred = unlockedEq.find(e => e.id === preferredId);
             const eq = preferred ?? unlockedEq[Math.floor(Math.random() * unlockedEq.length)];
+            // direction='right': 왼쪽(-130)에서 등장 → 중앙(150) → 오른쪽(480) 퇴장
+            // direction='left' : 오른쪽(480)에서 등장 → 중앙(150) → 왼쪽(-130) 퇴장
+            const startX = direction === 'right' ? -130 : 480;
             newCustomers.push({
               id: `c_${Date.now()}`,
               type,
-              name: CUSTOMER_NAMES[type],
-              x: 450,
+              name: '',
+              x: startX,
+              direction,
+              timedOut: false,
               state: 'walking_in',
               stateTimer: 0,
               desiredMenuId: eq.id,
               desiredEmoji: eq.productEmoji,
-              waitTimeout: 14000,
+              waitTimeout: 15000,
             });
           }
 
@@ -285,17 +284,19 @@ export const useGameStore = create<GameState & GameActions>()(
             if (c.state === 'walking_in') {
               const WALK_MS = 2200;
               const t = Math.min(timer / WALK_MS, 1);
-              const targetX = 195;
-              const x = 450 + (targetX - 450) * t;
+              const CENTER_X = 150;
+              const startX = c.direction === 'right' ? -130 : 480;
+              const x = startX + (CENTER_X - startX) * t;
               if (timer >= WALK_MS) {
-                return { ...c, x: targetX, state: 'at_window' as const, stateTimer: 0 };
+                return { ...c, x: CENTER_X, state: 'at_window' as const, stateTimer: 0 };
               }
               return { ...c, x, stateTimer: timer };
             }
 
             if (c.state === 'at_window') {
+              // 15초 대기 시 화남 상태로 직접 퇴장 (timedOut=true → walking_out에서 angry 이미지 유지)
               if (timer >= c.waitTimeout) {
-                return { ...c, state: 'sad' as const, stateTimer: 0 };
+                return { ...c, state: 'walking_out' as const, stateTimer: 0, timedOut: true };
               }
               return { ...c, stateTimer: timer };
             }
@@ -312,7 +313,7 @@ export const useGameStore = create<GameState & GameActions>()(
               return { ...c, stateTimer: timer };
             }
 
-            if (c.state === 'satisfied' || c.state === 'sad') {
+            if (c.state === 'satisfied') {
               if (timer >= 1200) {
                 return { ...c, state: 'walking_out' as const, stateTimer: 0 };
               }
@@ -322,7 +323,10 @@ export const useGameStore = create<GameState & GameActions>()(
             if (c.state === 'walking_out') {
               const WALK_MS = 2000;
               const t = Math.min(timer / WALK_MS, 1);
-              const x = c.x + (-120 - c.x) * t;
+              const CENTER_X = 150;
+              // 진입 방향과 동일한 방향으로 직선 퇴장
+              const exitX = c.direction === 'right' ? 480 : -130;
+              const x = CENTER_X + (exitX - CENTER_X) * t;
               if (timer >= WALK_MS) {
                 removedIds.add(c.id);
               }

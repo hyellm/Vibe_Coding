@@ -28,14 +28,13 @@ export interface Worker {
   stateTimer: number;
 }
 
-export type CustomerType = 'nabi' | 'luna' | 'mocha';
+export type CustomerType = 'cat1' | 'cat2';
 export type CustomerState =
   | 'walking_in'
   | 'at_window'
   | 'brewing'
   | 'drinking'
   | 'satisfied'
-  | 'sad'
   | 'walking_out';
 
 export interface Customer {
@@ -43,6 +42,8 @@ export interface Customer {
   type: CustomerType;
   name: string;
   x: number;
+  direction: 'left' | 'right'; // 이동 방향: 'right'=왼쪽 진입→오른쪽 퇴장, 'left'=오른쪽 진입→왼쪽 퇴장
+  timedOut: boolean; // 주문 타임아웃으로 퇴장 시 true → walking_out에서 angry 이미지 유지
   state: CustomerState;
   stateTimer: number;
   desiredMenuId: string;

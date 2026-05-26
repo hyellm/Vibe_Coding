@@ -209,12 +209,6 @@ function DolceSprite({ isBrewing }: { isBrewing: boolean }) {
         }
         transition={{ repeat: Infinity, duration: isBrewing ? 0.6 : 2 }}
       />
-      <div
-        className="font-black text-white rounded-full px-2 py-0.5"
-        style={{ fontSize: 8, background: 'linear-gradient(135deg,#C05010,#E07030)' }}
-      >
-        돌체
-      </div>
     </div>
   );
 }
@@ -340,13 +334,14 @@ function BrewButton() {
 }
 
 // ── Window zone ────────────────────────────────────────────────────
+// 화면 50% 높이 차지 (루트 844px 기준: HUD 60 + MissionBar 44 = 104px 제외 → ~320px)
 function WindowZone() {
   const customers = useGameStore(s => s.customers);
 
   return (
     <div
       className="relative overflow-hidden"
-      style={{ height: 200, flexShrink: 0 }}
+      style={{ height: 320, flexShrink: 0 }}
     >
       {/* Brick wall background */}
       <div className="absolute inset-0 brick-wall" />
@@ -357,11 +352,11 @@ function WindowZone() {
         style={{ top: 0, left: 0, right: 0, height: 12, background: '#B8CCE0' }}
       />
 
-      {/* Large arched window frame */}
+      {/* Large arched window frame — 좌우 60px 여백으로 좁게 */}
       <div
         className="absolute"
         style={{
-          left: 30, right: 30,
+          left: 60, right: 60,
           top: 8, bottom: 0,
           borderRadius: '80px 80px 0 0',
           border: '6px solid #6A4820',
@@ -374,13 +369,12 @@ function WindowZone() {
         <div className="absolute inset-0 city-bg" />
 
         {/* Blurry buildings */}
-        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 110 }}>
-          {/* Building silhouettes */}
-          <div className="absolute" style={{ left: 0, bottom: 0, width: 60, height: 90, background: '#7090A8', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-          <div className="absolute" style={{ left: 50, bottom: 0, width: 45, height: 70, background: '#8098A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
-          <div className="absolute" style={{ left: 90, bottom: 0, width: 70, height: 100, background: '#6888A0', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-          <div className="absolute" style={{ right: 0, bottom: 0, width: 55, height: 80, background: '#7898A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
-          <div className="absolute" style={{ right: 45, bottom: 0, width: 65, height: 110, background: '#6080A0', borderRadius: '4px 4px 0 0', opacity: 0.7 }} />
+        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 160 }}>
+          <div className="absolute" style={{ left: 0, bottom: 0, width: 45, height: 120, background: '#7090A8', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
+          <div className="absolute" style={{ left: 35, bottom: 0, width: 35, height: 90, background: '#8098A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
+          <div className="absolute" style={{ left: 65, bottom: 0, width: 55, height: 140, background: '#6888A0', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
+          <div className="absolute" style={{ right: 0, bottom: 0, width: 40, height: 100, background: '#7898A8', borderRadius: '4px 4px 0 0', opacity: 0.5 }} />
+          <div className="absolute" style={{ right: 35, bottom: 0, width: 50, height: 160, background: '#6080A0', borderRadius: '4px 4px 0 0', opacity: 0.7 }} />
         </div>
 
         {/* Glass sheen effect */}
@@ -393,8 +387,8 @@ function WindowZone() {
           }}
         />
 
-        {/* Cat customers (inside the window glass overlay) */}
-        <div className="absolute" style={{ left: -30, right: -30, bottom: 0, height: 150, overflow: 'visible' }}>
+        {/* 고양이 손님 컨테이너 — left:-60 으로 화면 전체 폭 확보, overflow:visible 로 창문 밖 이동 구현 */}
+        <div className="absolute" style={{ left: -60, right: -60, bottom: 22, height: 240, overflow: 'visible' }}>
           <AnimatePresence>
             {customers.map(c => (
               <CatCustomer key={c.id} customer={c} />
@@ -407,7 +401,7 @@ function WindowZone() {
       <div
         className="absolute"
         style={{
-          left: 24, right: 24,
+          left: 54, right: 54,
           top: 2, bottom: 0,
           borderRadius: '84px 84px 0 0',
           border: '10px solid #3A2808',
@@ -422,25 +416,21 @@ function WindowZone() {
         style={{ height: 22, background: 'linear-gradient(180deg,#8B6240,#6A4820)' }}
       />
 
-      {/* Counter shelf items */}
-      <div className="absolute" style={{ bottom: 8, left: 44, display: 'flex', gap: 10, alignItems: 'flex-end' }}>
-        {/* Tips jar */}
-        <div style={{ position: 'relative', width: 22, height: 30 }}>
-          <div style={{
-            width: 22, height: 30,
-            borderRadius: '3px 3px 5px 5px',
-            background: 'rgba(180,220,255,0.6)',
-            border: '2px solid rgba(100,160,220,0.7)',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'flex-end',
-            paddingBottom: 3,
-            overflow: 'hidden',
-          }}>
-            <div style={{ fontSize: 6, fontWeight: 900, color: '#4080B0' }}>TIPS</div>
-            <div style={{ fontSize: 9 }}>🪙</div>
-          </div>
+      {/* Counter shelf items — 창문 안쪽에 위치 */}
+      <div className="absolute" style={{ bottom: 8, left: 76, display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+        <div style={{
+          width: 22, height: 30,
+          borderRadius: '3px 3px 5px 5px',
+          background: 'rgba(180,220,255,0.6)',
+          border: '2px solid rgba(100,160,220,0.7)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'flex-end',
+          paddingBottom: 3,
+          overflow: 'hidden',
+        }}>
+          <div style={{ fontSize: 6, fontWeight: 900, color: '#4080B0' }}>TIPS</div>
+          <div style={{ fontSize: 9 }}>🪙</div>
         </div>
-        {/* Coffee cup */}
         <div style={{ width: 20, height: 20, borderRadius: '3px 3px 6px 6px', background: '#F5F0E8', border: '2px solid #D4C0A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10 }}>
           ☕
         </div>
