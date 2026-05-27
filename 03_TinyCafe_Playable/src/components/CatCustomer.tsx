@@ -60,6 +60,7 @@ export default function CatCustomer({ customer: c }: Props) {
         style={{
           height: 213,
           width: 'auto',
+          maxWidth: 'none',
           objectFit: 'contain',
           filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.35))',
         }}
