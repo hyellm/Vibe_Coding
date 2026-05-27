@@ -52,6 +52,7 @@ export default function CatCustomer({ customer: c }: Props) {
         zIndex: 15,
         pointerEvents: 'none',
         transform: 'translateX(-50%)',
+        width: 'max-content',
       }}
     >
       <motion.img
