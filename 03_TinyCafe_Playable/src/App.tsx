@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from './store/gameStore';
 import HUD from './components/HUD';
@@ -6,6 +6,8 @@ import MissionBar from './components/MissionBar';
 import CafeView from './components/CafeView';
 import CoinSlotBar from './components/CoinSlotBar';
 import UpgradeModal from './components/UpgradeModal';
+import FacilityScreen from './components/FacilityScreen';
+import SmartphoneScreen from './components/SmartphoneScreen';
 
 function OfflinePopup() {
   const popup = useGameStore(s => s.offlinePopup);
@@ -64,9 +66,12 @@ function OfflinePopup() {
   );
 }
 
+type OverlayType = 'facility' | 'smartphone' | null;
+
 export default function App() {
   const tick = useGameStore(s => s.tick);
   const lastTimeRef = useRef(Date.now());
+  const [overlay, setOverlay] = useState<OverlayType>(null);
 
   useEffect(() => {
     lastTimeRef.current = Date.now();
@@ -91,19 +96,27 @@ export default function App() {
         background: '#2A1408',
       }}
     >
-      {/* Fixed top UI */}
       <HUD />
       <MissionBar />
-
-      {/* Game view: window zone + counter + cafe interior */}
-      <CafeView />
-
-      {/* Bottom coin collection bar */}
+      <CafeView
+        onOpenFacility={() => setOverlay('facility')}
+        onOpenSmartphone={() => setOverlay('smartphone')}
+      />
       <CoinSlotBar />
 
-      {/* Overlays */}
+      {/* Game overlays */}
       <UpgradeModal />
       <OfflinePopup />
+
+      {/* Screen overlays */}
+      <AnimatePresence>
+        {overlay === 'facility' && (
+          <FacilityScreen key="facility" onClose={() => setOverlay(null)} />
+        )}
+        {overlay === 'smartphone' && (
+          <SmartphoneScreen key="smartphone" onClose={() => setOverlay(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

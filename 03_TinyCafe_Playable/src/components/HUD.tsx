@@ -77,7 +77,8 @@ export default function HUD() {
   const equipment = useGameStore(s => s.equipment);
   const heartTarget = useGameStore(s => s.heartTarget);
 
-  const coinsRate = getIncomePerSec(equipment);
+  const albanetWorkers = useGameStore(s => s.albanetWorkers);
+  const coinsRate = getIncomePerSec(equipment, albanetWorkers);
 
   return (
     <div

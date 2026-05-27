@@ -1,197 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getProductionTimeMs } from '../store/gameStore';
 import CatCustomer from './CatCustomer';
+import { HandDripSVG, EspressoSVG } from './EquipmentSVGs';
 import dolceImg from '../../TinyCafe_reference_img/Dolce.png';
 import mouseImg from '../../TinyCafe_reference_img/mouse_workers.png';
-
-// ── Equipment SVGs ─────────────────────────────────────────────────
-
-function HandDripSVG({ level, progress }: { level: number; progress: number }) {
-  const circ = 2 * Math.PI * 18;
-  const offset = circ * (1 - Math.min(1, progress));
-  return (
-    <div className="flex flex-col items-center" style={{ width: 90, position: 'relative' }}>
-      <svg width={90} height={100} viewBox="0 0 90 100" style={{ overflow: 'visible' }}>
-        {/* Coffee sack */}
-        <rect x={52} y={58} width={32} height={38} rx={4} fill="#C8A870" />
-        <rect x={56} y={62} width={24} height={16} rx={3} fill="#B89060" />
-        <text x={68} y={73} textAnchor="middle" fontSize={6} fill="#8A6030" fontWeight="bold">COFFEE</text>
-        <ellipse cx={68} cy={58} rx={16} ry={5} fill="#D4B880" />
-
-        {/* Tripod legs */}
-        <line x1={45} y1={90} x2={15} y2={95} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        <line x1={45} y1={90} x2={45} y2={96} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        <line x1={45} y1={90} x2={52} y2={95} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        {/* Tripod top bar */}
-        <line x1={20} y1={52} x2={52} y2={52} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-        <line x1={20} y1={52} x2={45} y2={90} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-        <line x1={52} y1={52} x2={45} y2={90} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-
-        {/* Dripper cone */}
-        <path d="M24 52 L36 78 L36 82 L34 88 L46 88 L44 82 L44 78 L56 52 Z" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1.5} />
-        <path d="M26 56 L54 56" stroke="#D4C8B0" strokeWidth={1} opacity="0.5" />
-
-        {/* Filter paper inside */}
-        <path d="M29 58 L36 78 L44 78 L51 58 Z" fill="#FDECD0" opacity="0.6" />
-
-        {/* Coffee drip */}
-        {progress > 0 && progress < 1 && (
-          <motion.line
-            x1={40} y1={88} x2={40} y2={95}
-            stroke="#5A3010"
-            strokeWidth={2}
-            strokeLinecap="round"
-            animate={{ y2: [92, 97, 92] }}
-            transition={{ repeat: Infinity, duration: 0.6 }}
-          />
-        )}
-
-        {/* Cup at bottom */}
-        <ellipse cx={40} cy={97} rx={10} ry={4} fill="#F5F0E8" />
-        <path d="M30 97 L32 108 Q40 112 48 108 L50 97" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1} />
-
-        {/* Progress ring around dripper */}
-        {level > 0 && (
-          <circle
-            cx={40} cy={65} r={18}
-            fill="none"
-            stroke="#FFD700"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeDasharray={circ}
-            strokeDashoffset={offset}
-            transform="rotate(-90 40 65)"
-            opacity={0.7}
-            style={{ transition: 'stroke-dashoffset 0.4s linear' }}
-          />
-        )}
-      </svg>
-
-      {/* Level badge */}
-      <div
-        className="absolute top-0 right-0 flex items-center justify-center font-black text-white rounded-md px-1"
-        style={{
-          fontSize: 8,
-          background: '#2D5016',
-          border: '1px solid #4A8028',
-          minWidth: 26,
-          height: 16,
-        }}
-      >
-        Lv.{level}
-      </div>
-    </div>
-  );
-}
-
-function EspressoSVG({ level, progress }: { level: number; progress: number }) {
-  const circ = 2 * Math.PI * 20;
-  const offset = circ * (1 - Math.min(1, progress));
-  // Yellow arc gauge on dial
-  const dialCirc = 2 * Math.PI * 14;
-  const dialOffset = dialCirc * (1 - Math.min(1, progress));
-
-  return (
-    <div className="flex flex-col items-center" style={{ width: 100, position: 'relative' }}>
-      <svg width={100} height={100} viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
-        {/* Machine body */}
-        <rect x={18} y={20} width={64} height={72} rx={10} fill="#F0ECE4" stroke="#D8D0C0" strokeWidth={2} />
-
-        {/* Top shadow panel */}
-        <rect x={18} y={20} width={64} height={18} rx={10} fill="#E0D8CC" />
-        <rect x={18} y={30} width={64} height={8} fill="#E0D8CC" />
-
-        {/* Dial circle on body */}
-        <circle cx={52} cy={52} r={20} fill="#2A2A2A" />
-        <circle cx={52} cy={52} r={16} fill="#1A1A1A" />
-
-        {/* Coffee bean logo on dial */}
-        <ellipse cx={52} cy={52} rx={7} ry={9} fill="#8B5E2A" />
-        <path d="M52 43 Q56 52 52 61" stroke="#5A3A10" strokeWidth={1.5} fill="none" />
-
-        {/* Yellow gauge arc */}
-        <circle
-          cx={52} cy={52} r={14}
-          fill="none"
-          stroke="#FFD700"
-          strokeWidth={3.5}
-          strokeLinecap="round"
-          strokeDasharray={dialCirc}
-          strokeDashoffset={dialOffset}
-          transform="rotate(-90 52 52)"
-          style={{ transition: 'stroke-dashoffset 0.4s linear' }}
-        />
-
-        {/* Outer progress ring */}
-        {level > 0 && (
-          <circle
-            cx={52} cy={52} r={20}
-            fill="none"
-            stroke="rgba(255,215,0,0.3)"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeDasharray={circ}
-            strokeDashoffset={offset}
-            transform="rotate(-90 52 52)"
-            style={{ transition: 'stroke-dashoffset 0.4s linear' }}
-          />
-        )}
-
-        {/* Knobs on top */}
-        <circle cx={34} cy={25} r={5} fill="#C8C0B0" />
-        <circle cx={50} cy={25} r={5} fill="#C8C0B0" />
-        <circle cx={66} cy={25} r={5} fill="#C8C0B0" />
-
-        {/* Portafilter arm */}
-        <rect x={6} y={64} width={18} height={10} rx={5} fill="#8B5E2A" />
-        <ellipse cx={7} cy={69} rx={6} ry={5} fill="#6A4020" />
-
-        {/* Steam wand */}
-        <rect x={76} y={50} width={6} height={24} rx={3} fill="#C8C0B0" />
-        <ellipse cx={79} cy={74} rx={5} ry={3} fill="#B0A890" />
-
-        {/* Coffee output + cup */}
-        <rect x={40} y={86} width={24} height={3} rx={1.5} fill="#C8C0B0" />
-
-        {/* ESPRESSO label */}
-        <rect x={22} y={78} width={56} height={10} rx={3} fill="#2A2A2A" />
-        <text x={50} y={86} textAnchor="middle" fontSize={6} fill="#FFD700" fontWeight="bold" letterSpacing={1}>
-          ESPRESSO
-        </text>
-
-        {/* Drip indicator */}
-        {progress > 0.1 && progress < 1 && (
-          <motion.line
-            x1={50} y1={90} x2={50} y2={96}
-            stroke="#3A2010"
-            strokeWidth={2}
-            strokeLinecap="round"
-            animate={{ y2: [93, 97, 93] }}
-            transition={{ repeat: Infinity, duration: 0.5 }}
-          />
-        )}
-
-        {/* Cup on tray */}
-        <ellipse cx={50} cy={97} rx={10} ry={4} fill="#F5F0E8" />
-        <path d="M40 97 L42 106 Q50 110 58 106 L60 97" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1} />
-      </svg>
-
-      {/* Level badge */}
-      <div
-        className="absolute top-0 right-0 flex items-center justify-center font-black text-white rounded-md px-1"
-        style={{
-          fontSize: 8,
-          background: '#2D5016',
-          border: '1px solid #4A8028',
-          minWidth: 26,
-          height: 16,
-        }}
-      >
-        Lv.{level}
-      </div>
-    </div>
-  );
-}
 
 // ── Dolce sprite ───────────────────────────────────────────────────
 // ── Dolce sprite ───────────────────────────────────────────────────
@@ -471,7 +283,7 @@ function CoinFX({ fx }: { fx: { id: string; x: number; y: number; amount: number
 }
 
 // ── Cafe interior ──────────────────────────────────────────────────
-function CafeInterior() {
+function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: () => void; onOpenSmartphone: () => void }) {
   const equipment = useGameStore(s => s.equipment);
   const brewingId = useGameStore(s => s.brewingCustomerId);
   const coinFXs = useGameStore(s => s.coinFXs);
@@ -613,16 +425,15 @@ function CafeInterior() {
       {/* Right-side quick buttons */}
       <div
         className="absolute right-2 flex flex-col gap-2"
-        style={{ top: 160, zIndex: 6 }}
+        style={{ top: 160, zIndex: 20 }}
       >
         {[
-          { icon: '📘', label: '캣북' },
-          { icon: '🔧', label: '업그레이드' },
-          { icon: '📱', label: '스마트폰' },
-          { icon: '📬', label: '우편' },
+          { icon: '🛠️', label: '시설', onClick: onOpenFacility },
+          { icon: '📱', label: '스마트폰', onClick: onOpenSmartphone },
         ].map(btn => (
           <button
             key={btn.label}
+            onClick={btn.onClick}
             className="flex items-center justify-center rounded-xl"
             style={{
               width: 36, height: 36,
@@ -669,23 +480,18 @@ function CafeInterior() {
 }
 
 // ── Main CafeView ──────────────────────────────────────────────────
-export default function CafeView() {
+export default function CafeView({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: () => void; onOpenSmartphone: () => void }) {
   return (
     <div
       className="flex flex-col"
       style={{ flex: 1, overflow: 'hidden', position: 'relative' }}
     >
-      {/* Window zone: exterior + cat customers */}
       <WindowZone />
-
-      {/* Counter ledge divider */}
       <div
         className="counter-wood"
         style={{ height: 20, flexShrink: 0, borderTop: '3px solid #C49060', borderBottom: '3px solid #5A3020' }}
       />
-
-      {/* Cafe interior */}
-      <CafeInterior />
+      <CafeInterior onOpenFacility={onOpenFacility} onOpenSmartphone={onOpenSmartphone} />
     </div>
   );
 }

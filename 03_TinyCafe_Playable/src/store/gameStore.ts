@@ -18,12 +18,18 @@ export function getCoinsPerItem(eq: Equipment): number {
 export function getUpgradeCost(eq: Equipment): number {
   return Math.floor(eq.baseUpgradeCost * eq.level * 1.6);
 }
-export function getIncomePerSec(equipment: Equipment[]): number {
+export function getIncomePerSec(equipment: Equipment[], albanetWorkers: Record<string, number> = {}): number {
   return equipment.reduce((sum, eq) => {
-    if (eq.level === 0) return sum;
+    if (eq.level === 0 || eq.id === 'bathhouse') return sum;
     const ptSec = getProductionTimeMs(eq) / 1000;
-    return sum + getCoinsPerItem(eq) / ptSec;
+    const mult = 1 + (albanetWorkers[eq.id] ?? 0);
+    return sum + (getCoinsPerItem(eq) * mult) / ptSec;
   }, 0);
+}
+
+export function getAlbanetHireCost(currentCount: number): number {
+  if (currentCount === 0) return 0;
+  return Math.floor(40000 * Math.pow(4, currentCount - 1));
 }
 
 // ── Equipment templates ────────────────────────────────────────────
@@ -53,6 +59,19 @@ const EQUIPMENT_TEMPLATES: Omit<Equipment, 'level' | 'productionProgress'>[] = [
     baseUpgradeCost: 150,
     heartsOnUpgrade: 8,
     unlockCost: 200,
+  },
+  {
+    id: 'water_pump',
+    name: '물 펌프',
+    emoji: '💧',
+    maxLevel: 50,
+    baseProductionTime: 10,
+    productName: '아메리카노',
+    productEmoji: '🥤',
+    baseCoinsPerItem: 20,
+    baseUpgradeCost: 180,
+    heartsOnUpgrade: 7,
+    unlockCost: 800,
   },
   {
     id: 'bathhouse',
@@ -131,6 +150,7 @@ interface GameState {
   upgradeCount: number;
   heartTarget: number;
   activeTab: TabName;
+  albanetWorkers: Record<string, number>;
 }
 
 interface GameActions {
@@ -144,6 +164,7 @@ interface GameActions {
   dismissOfflinePopup: () => void;
   dismissMissionReward: () => void;
   setActiveTab: (tab: TabName) => void;
+  hireAlbanet: (equipmentId: string) => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────
@@ -177,6 +198,7 @@ export const useGameStore = create<GameState & GameActions>()(
       customersServed: 0,
       upgradeCount: 0,
       heartTarget: 1000,
+      albanetWorkers: {},
       activeTab: 'home',
 
       tick: (delta: number) => {
@@ -194,10 +216,11 @@ export const useGameStore = create<GameState & GameActions>()(
             const newProg = eq.productionProgress + delta;
             const ptMs = getProductionTimeMs(eq);
             if (newProg >= ptMs && newCoinSlots.length < 15) {
+              const albanetMult = 1 + (state.albanetWorkers[eq.id] ?? 0);
               newCoinSlots.push({
                 id: `slot_${eq.id}_${Date.now()}_${Math.random().toString(36).slice(2)}`,
                 drinkEmoji: eq.productEmoji,
-                amount: getCoinsPerItem(eq),
+                amount: Math.floor(getCoinsPerItem(eq) * albanetMult),
                 createdAt: Date.now(),
               });
               return { ...eq, productionProgress: newProg - ptMs };
@@ -259,7 +282,8 @@ export const useGameStore = create<GameState & GameActions>()(
             const brewedCustomer = newCustomers.find(c => c.id === newBrewingId);
             if (brewedCustomer) {
               const eq = newEquipment.find(e => e.id === newBrewEquipmentId);
-              const amount = eq ? getCoinsPerItem(eq) * 3 : 30; // customer drink earns 3× auto
+              const albanetMult = 1 + (state.albanetWorkers[newBrewEquipmentId ?? ''] ?? 0);
+              const amount = eq ? Math.floor(getCoinsPerItem(eq) * 3 * albanetMult) : 30;
               newCoinSlots.push({
                 id: `slot_serve_${Date.now()}`,
                 drinkEmoji: brewedCustomer.desiredEmoji,
@@ -491,6 +515,19 @@ export const useGameStore = create<GameState & GameActions>()(
       dismissOfflinePopup: () => set({ offlinePopup: null }),
       dismissMissionReward: () => set({ pendingMissionReward: null }),
       setActiveTab: (tab) => set({ activeTab: tab }),
+      hireAlbanet: (equipmentId: string) => {
+        set((state) => {
+          const current = state.albanetWorkers[equipmentId] ?? 0;
+          if (current >= 5) return state;
+          const cost = getAlbanetHireCost(current);
+          if (cost > 0 && state.resources.cheese < cost) return state;
+          return {
+            ...state,
+            resources: { ...state.resources, cheese: state.resources.cheese - cost },
+            albanetWorkers: { ...state.albanetWorkers, [equipmentId]: current + 1 },
+          };
+        });
+      },
     }),
     {
       name: 'tiny-cafe-v2',
@@ -501,6 +538,7 @@ export const useGameStore = create<GameState & GameActions>()(
         customersServed: state.customersServed,
         upgradeCount: state.upgradeCount,
         lastSaveTime: state.lastSaveTime,
+        albanetWorkers: state.albanetWorkers,
       }),
       merge: (saved: unknown, current) => {
         const s = saved as Record<string, unknown> | null;
@@ -536,6 +574,7 @@ export const useGameStore = create<GameState & GameActions>()(
           missions: (s.missions as Mission[] | undefined) ?? current.missions,
           customersServed: (s.customersServed as number | undefined) ?? 0,
           upgradeCount: (s.upgradeCount as number | undefined) ?? 0,
+          albanetWorkers: (s.albanetWorkers as Record<string, number> | undefined) ?? {},
           lastSaveTime: Date.now(),
           offlinePopup: offlineCoins > 20 ? { show: true, coins: Math.round(offlineCoins) } : null,
         };
