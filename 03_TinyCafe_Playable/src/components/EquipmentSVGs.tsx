@@ -121,10 +121,15 @@ export function WaterPumpSVG({ level, progress, scale = 1 }: SVGProps) {
         <rect x={44} y={8} width={24} height={6} rx={3} fill="#88B8D0" stroke="#6898B0" strokeWidth={1} />
         {/* Spout */}
         <path d="M20 70 Q8 70 8 82 L8 88" stroke="#6898B0" strokeWidth={5} fill="none" strokeLinecap="round" />
-        {/* Drip */}
+        {/* Water cup under spout */}
+        <path d="M3 89 L5 102 Q8 105 11 102 L13 89 Z" fill="#E8F8FF" stroke="#88C8E8" strokeWidth={1.5} />
+        <line x1={3} y1={89} x2={13} y2={89} stroke="#88C8E8" strokeWidth={1.5} />
+        <path d="M4 95 L5 102 Q8 105 11 102 L12 95 Z" fill="#5ABFE8" opacity={0.7} />
+        {/* Falling water droplet */}
         {progress > 0 && progress < 1 && (
-          <motion.ellipse cx={8} cy={91} rx={3} ry={3} fill="#5ABFE8"
-            animate={{ ry: [3, 5, 3], cy: [91, 95, 91] }} transition={{ repeat: Infinity, duration: 0.7 }} />
+          <motion.ellipse cx={8} cy={82} rx={2} ry={3} fill="#5ABFE8"
+            animate={{ cy: [80, 88, 80] }}
+            transition={{ repeat: Infinity, duration: 0.5, ease: 'easeIn' }} />
         )}
         {/* Base */}
         <rect x={18} y={88} width={54} height={6} rx={3} fill="#88B8D0" />

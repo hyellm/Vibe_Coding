@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getProductionTimeMs } from '../store/gameStore';
 import CatCustomer from './CatCustomer';
-import { HandDripSVG, EspressoSVG } from './EquipmentSVGs';
+import { HandDripSVG, EspressoSVG, WaterPumpSVG } from './EquipmentSVGs';
 import dolceImg from '../../TinyCafe_reference_img/Dolce.png';
-import mouseImg from '../../TinyCafe_reference_img/mouse_workers.png';
+import espressoWorkerImg from '../../TinyCafe_reference_img/espresso_worker.png';
+import waterpumpWorkerImg from '../../TinyCafe_reference_img/waterpump_worker.png';
 
 // ── Dolce sprite ───────────────────────────────────────────────────
 // ── Dolce sprite ───────────────────────────────────────────────────
@@ -22,24 +23,6 @@ function DolceSprite({ isBrewing }: { isBrewing: boolean }) {
         transition={{ repeat: Infinity, duration: isBrewing ? 0.6 : 2 }}
       />
     </div>
-  );
-}
-
-// ── Worker mouse sprite ───────────────────────────────────────────
-// ── Worker mouse sprite ───────────────────────────────────────────
-
-function WorkerMouse({ isWorking }: { isWorking: boolean }) {
-  return (
-    <motion.img
-      src={mouseImg}
-      alt="worker"
-      style={{ width: 36, height: 36, objectFit: 'contain' }}
-      animate={isWorking
-        ? { rotate: [-8, 8, -8] }
-        : { y: [0, -2, 0] }
-      }
-      transition={{ repeat: Infinity, duration: isWorking ? 0.5 : 2.5 }}
-    />
   );
 }
 
@@ -291,6 +274,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
 
   const drip = equipment.find(e => e.id === 'drip_coffee')!;
   const espresso = equipment.find(e => e.id === 'espresso_machine');
+  const waterPump = equipment.find(e => e.id === 'water_pump');
   const bathhouse = equipment.find(e => e.id === 'bathhouse');
 
   const dripProg = drip.level > 0
@@ -298,6 +282,9 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
     : 0;
   const espProg = espresso && espresso.level > 0
     ? espresso.productionProgress / getProductionTimeMs(espresso)
+    : 0;
+  const pumpProg = waterPump && waterPump.level > 0
+    ? waterPump.productionProgress / getProductionTimeMs(waterPump)
     : 0;
 
   return (
@@ -327,54 +314,44 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         }}
       />
 
-      {/* Equipment row — each machine with its worker directly below */}
+      {/* Equipment row: [Espresso | Drip | WaterPump] */}
       <div
-        className="absolute flex items-start gap-4 px-4"
+        className="absolute flex items-start"
         style={{ top: 10, left: 0, right: 0, zIndex: 4 }}
       >
-        {/* Drip coffee + worker */}
-        <div className="flex flex-col items-center">
+        {/* LEFT: Espresso Machine (hidden until unlocked) */}
+        <div className="flex flex-col items-center" style={{ flex: 1 }}>
+          {espresso && espresso.level > 0 && (
+            <button
+              onClick={() => openUpgrade('espresso_machine')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            >
+              <EspressoSVG level={espresso.level} progress={espProg} scale={0.85} />
+            </button>
+          )}
+        </div>
+
+        {/* CENTER: Drip Coffee (Dolce's machine) */}
+        <div className="flex flex-col items-center" style={{ flex: 1 }}>
           <button
             onClick={() => openUpgrade('drip_coffee')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             <HandDripSVG level={drip.level} progress={dripProg} />
           </button>
-          <WorkerMouse isWorking={dripProg > 0 && dripProg < 1} />
         </div>
 
-        {/* Espresso machine + worker */}
-        {espresso && espresso.level > 0 ? (
-          <div className="flex flex-col items-center">
+        {/* RIGHT: Water Pump (hidden until unlocked) */}
+        <div className="flex flex-col items-center" style={{ flex: 1 }}>
+          {waterPump && waterPump.level > 0 && (
             <button
-              onClick={() => openUpgrade('espresso_machine')}
+              onClick={() => openUpgrade('water_pump')}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <EspressoSVG level={espresso.level} progress={espProg} />
+              <WaterPumpSVG level={waterPump.level} progress={pumpProg} scale={0.85} />
             </button>
-            <WorkerMouse isWorking={espProg > 0 && espProg < 1} />
-          </div>
-        ) : (
-          /* Locked slot — no worker */
-          <button
-            onClick={() => openUpgrade('espresso_machine')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-          >
-            <div
-              className="flex flex-col items-center justify-center rounded-xl"
-              style={{
-                width: 90, height: 100,
-                background: 'rgba(0,0,0,0.12)',
-                border: '2px dashed #C0A070',
-              }}
-            >
-              <span style={{ fontSize: 22 }}>🔒</span>
-              <span style={{ fontSize: 8, color: '#8A6040', fontWeight: 700, marginTop: 3 }}>
-                {espresso ? `${espresso.unlockCost}🪙` : ''}
-              </span>
-            </div>
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Counter divider below shelf */}
@@ -383,14 +360,43 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         style={{ top: 130, left: 0, right: 0, height: 18, zIndex: 2 }}
       />
 
-      {/* Dolce + brew button area */}
+      {/* Worker row: [espresso_worker | Dolce+BrewButton | waterpump_worker] */}
       <div
-        className="absolute flex flex-col items-center"
+        className="absolute flex items-start"
         style={{ top: 148, left: 0, right: 0, zIndex: 10 }}
       >
-        <BrewButton />
-        <div style={{ marginTop: 8 }}>
-          <DolceSprite isBrewing={!!brewingId} />
+        {/* LEFT: Espresso worker */}
+        <div className="flex items-center justify-center pt-2" style={{ flex: 1 }}>
+          {espresso && espresso.level > 0 && (
+            <motion.img
+              src={espressoWorkerImg}
+              alt="espresso worker"
+              style={{ width: 46, height: 46, objectFit: 'contain' }}
+              animate={{ x: [-2, 2, -2] }}
+              transition={{ repeat: Infinity, duration: 0.8 }}
+            />
+          )}
+        </div>
+
+        {/* CENTER: BrewButton + Dolce */}
+        <div className="flex flex-col items-center" style={{ flex: 1 }}>
+          <BrewButton />
+          <div style={{ marginTop: 8 }}>
+            <DolceSprite isBrewing={!!brewingId} />
+          </div>
+        </div>
+
+        {/* RIGHT: Water pump worker */}
+        <div className="flex items-center justify-center pt-2" style={{ flex: 1 }}>
+          {waterPump && waterPump.level > 0 && (
+            <motion.img
+              src={waterpumpWorkerImg}
+              alt="waterpump worker"
+              style={{ width: 46, height: 46, objectFit: 'contain' }}
+              animate={{ rotate: [-5, 5, -5] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            />
+          )}
         </div>
       </div>
 
@@ -425,7 +431,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
       {/* Right-side quick buttons */}
       <div
         className="absolute right-2 flex flex-col gap-2"
-        style={{ top: 160, zIndex: 20 }}
+        style={{ top: 204, zIndex: 20 }}
       >
         {[
           { icon: '🛠️', label: '시설', onClick: onOpenFacility },

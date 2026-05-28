@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore, getCoinsPerItem, getProductionTimeMs, getUpgradeCost, getIncomePerSec } from '../store/gameStore';
+import { useGameStore, getCoinsPerItem, getProductionTimeMs, getUpgradeCost } from '../store/gameStore';
 import { EquipmentSVG } from './EquipmentSVGs';
 import type { Equipment } from '../types';
 
@@ -115,6 +115,11 @@ function MachineInfoOverlay({
           >
             🪙 {fmt(eq.unlockCost)}
           </motion.button>
+        ) : eq.id === 'drip_coffee' ? (
+          <div className="w-full py-3 rounded-2xl text-center font-bold"
+            style={{ fontSize: 13, background: '#F0EDE8', color: '#8A6040' }}>
+            돌체 전용 장비
+          </div>
         ) : (
           <motion.button
             whileTap={canUpgrade ? { scale: 0.96 } : {}}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useGameStore } from '../store/gameStore';
 import FacilityScreen from './FacilityScreen';
 import AlbanetScreen from './AlbanetScreen';
 import RecipeScreen from './RecipeScreen';
@@ -14,10 +15,13 @@ const APPS = [
   { id: 'mail', icon: '📬', label: '메일', bg: '#9B59B6' },
   { id: 'camera', icon: '📷', label: '카메라', bg: '#5A5A5A' },
   { id: 'settings', icon: '⚙️', label: '설정', bg: '#7A7A7A' },
+  { id: 'newgame', icon: '🔄', label: '새 게임', bg: '#C0392B' },
 ];
 
 export default function SmartphoneScreen({ onClose }: { onClose: () => void }) {
   const [appScreen, setAppScreen] = useState<AppScreen>('home');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const resetGame = useGameStore(s => s.resetGame);
 
   return (
     <motion.div
@@ -86,6 +90,8 @@ export default function SmartphoneScreen({ onClose }: { onClose: () => void }) {
                       onClick={() => {
                         if (app.id === 'facility' || app.id === 'albanet' || app.id === 'recipe') {
                           setAppScreen(app.id as AppScreen);
+                        } else if (app.id === 'newgame') {
+                          setShowResetConfirm(true);
                         }
                       }}
                       className="flex flex-col items-center gap-1"
@@ -99,6 +105,41 @@ export default function SmartphoneScreen({ onClose }: { onClose: () => void }) {
                     </button>
                   ))}
                 </div>
+
+                {/* Reset confirmation popup */}
+                {showResetConfirm && (
+                  <div className="absolute inset-0 flex items-center justify-center"
+                    style={{ background: 'rgba(0,0,0,0.55)', zIndex: 10 }}>
+                    <div className="rounded-3xl p-5 mx-5" style={{ background: 'white', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
+                      <div className="font-black text-center mb-2" style={{ fontSize: 16, color: '#1A1A1A' }}>
+                        새 게임 시작
+                      </div>
+                      <div className="text-center mb-4" style={{ fontSize: 13, color: '#5A5A5A', lineHeight: 1.6 }}>
+                        코인·치즈·하트·미션·장비 레벨이<br />모두 초기화됩니다.<br />정말로 다시 시작하시겠습니까?
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setShowResetConfirm(false)}
+                          className="flex-1 py-3 rounded-2xl font-black"
+                          style={{ fontSize: 14, background: '#E8E0D4', border: 'none', cursor: 'pointer', color: '#5A3A20' }}
+                        >
+                          아니요
+                        </button>
+                        <button
+                          onClick={() => {
+                            resetGame();
+                            setShowResetConfirm(false);
+                            onClose();
+                          }}
+                          className="flex-1 py-3 rounded-2xl font-black text-white"
+                          style={{ fontSize: 14, background: '#C0392B', border: 'none', cursor: 'pointer' }}
+                        >
+                          예
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
 

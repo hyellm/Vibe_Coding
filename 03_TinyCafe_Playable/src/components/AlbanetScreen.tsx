@@ -16,7 +16,7 @@ const TEAM_NAMES: Record<string, string> = {
 
 const TEAM_ICONS: Record<string, string> = {
   drip_coffee: '☕',
-  espresso_machine: '🫖',
+  espresso_machine: '🫘',
   water_pump: '💧',
 };
 

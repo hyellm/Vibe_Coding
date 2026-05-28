@@ -50,7 +50,7 @@ const EQUIPMENT_TEMPLATES: Omit<Equipment, 'level' | 'productionProgress'>[] = [
   {
     id: 'espresso_machine',
     name: '에스프레소 머신',
-    emoji: '🫖',
+    emoji: '🫘',
     maxLevel: 50,
     baseProductionTime: 6,
     productName: '아메리카노',
@@ -165,6 +165,7 @@ interface GameActions {
   dismissMissionReward: () => void;
   setActiveTab: (tab: TabName) => void;
   hireAlbanet: (equipmentId: string) => void;
+  resetGame: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────
@@ -526,6 +527,33 @@ export const useGameStore = create<GameState & GameActions>()(
             resources: { ...state.resources, cheese: state.resources.cheese - cost },
             albanetWorkers: { ...state.albanetWorkers, [equipmentId]: current + 1 },
           };
+        });
+      },
+      resetGame: () => {
+        set({
+          resources: { coins: 150, cheese: 0, hearts: 0, gems: 5 },
+          equipment: EQUIPMENT_TEMPLATES.map(t => ({
+            ...t,
+            level: t.id === 'drip_coffee' ? 1 : 0,
+            productionProgress: 0,
+          })),
+          workers: [{ id: 'dolce', equipmentId: 'drip_coffee', state: 'idle', stateTimer: 0 }],
+          customers: [],
+          coinSlots: [],
+          coinFXs: [],
+          missions: INITIAL_MISSIONS,
+          pendingMissionReward: null,
+          customersServed: 0,
+          upgradeCount: 0,
+          albanetWorkers: {},
+          brewingCustomerId: null,
+          brewTimer: 0,
+          brewDuration: 0,
+          brewEquipmentId: null,
+          offlinePopup: null,
+          lastSaveTime: Date.now(),
+          customerTimer: 0,
+          nextCustomerInterval: 4000,
         });
       },
     }),
