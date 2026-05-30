@@ -6,144 +6,227 @@ interface SVGProps {
   scale?: number;
 }
 
+const LvBadge = ({ level }: { level: number }) => (
+  <div
+    className="absolute top-0 left-0 flex items-center justify-center font-black text-white rounded-lg px-1"
+    style={{ fontSize: 9, background: '#2D7016', border: '1.5px solid #4A9028', minWidth: 30, height: 18, letterSpacing: 0 }}
+  >
+    Lv.{level}
+  </div>
+);
+
+// ── Hand Drip ──────────────────────────────────────────────────────
 export function HandDripSVG({ level, progress, scale = 1 }: SVGProps) {
-  const circ = 2 * Math.PI * 18;
+  const circ = 2 * Math.PI * 16;
   const offset = circ * (1 - Math.min(1, progress));
   const w = 90 * scale;
   const h = 100 * scale;
   return (
     <div className="flex flex-col items-center" style={{ width: w, position: 'relative' }}>
       <svg width={w} height={h} viewBox="0 0 90 100" style={{ overflow: 'visible' }}>
-        <rect x={52} y={58} width={32} height={38} rx={4} fill="#C8A870" />
-        <rect x={56} y={62} width={24} height={16} rx={3} fill="#B89060" />
-        <text x={68} y={73} textAnchor="middle" fontSize={6} fill="#8A6030" fontWeight="bold">COFFEE</text>
-        <ellipse cx={68} cy={58} rx={16} ry={5} fill="#D4B880" />
-        <line x1={45} y1={90} x2={15} y2={95} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        <line x1={45} y1={90} x2={45} y2={96} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        <line x1={45} y1={90} x2={52} y2={95} stroke="#8B5E2A" strokeWidth={4} strokeLinecap="round" />
-        <line x1={20} y1={52} x2={52} y2={52} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-        <line x1={20} y1={52} x2={45} y2={90} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-        <line x1={52} y1={52} x2={45} y2={90} stroke="#8B5E2A" strokeWidth={3} strokeLinecap="round" />
-        <path d="M24 52 L36 78 L36 82 L34 88 L46 88 L44 82 L44 78 L56 52 Z" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1.5} />
-        <path d="M26 56 L54 56" stroke="#D4C8B0" strokeWidth={1} opacity="0.5" />
-        <path d="M29 58 L36 78 L44 78 L51 58 Z" fill="#FDECD0" opacity="0.6" />
+
+        {/* ── 삼각대 다리 ── */}
+        <line x1={44} y1={24} x2={16} y2={96} stroke="#8A5C24" strokeWidth={5} strokeLinecap="round" />
+        <line x1={44} y1={24} x2={72} y2={96} stroke="#8A5C24" strokeWidth={5} strokeLinecap="round" />
+        <line x1={44} y1={24} x2={44} y2={96} stroke="#7A4C18" strokeWidth={4} strokeLinecap="round" />
+        {/* 크로스 브레이스 */}
+        <line x1={27} y1={68} x2={61} y2={68} stroke="#8A5C24" strokeWidth={3} strokeLinecap="round" />
+        {/* 다리 발받침 */}
+        <ellipse cx={16} cy={96} rx={4} ry={2} fill="#6A4010" />
+        <ellipse cx={72} cy={96} rx={4} ry={2} fill="#6A4010" />
+        <ellipse cx={44} cy={96} rx={3} ry={1.5} fill="#6A4010" />
+
+        {/* ── 상단 플랫폼 ── */}
+        <ellipse cx={44} cy={22} rx={20} ry={5} fill="#D8A030" />
+        <ellipse cx={44} cy={24} rx={20} ry={5} fill="#C08020" />
+
+        {/* ── 상단 필터 컵 ── */}
+        <path d="M25 21 L27 4 Q44 -3 61 4 L63 21 Q44 28 25 21 Z" fill="#F8F4EE" stroke="#D8D2C8" strokeWidth={1.2} />
+        {/* 빨간 밴드 */}
+        <path d="M26 17 Q44 24 62 17" fill="none" stroke="#E84A30" strokeWidth={4} />
+        {/* 커피 원두 */}
+        <ellipse cx={44} cy={10} rx={14} ry={5} fill="#7A3A08" opacity={0.88} />
+        {/* 컵 손잡이 */}
+        <path d="M63 11 Q75 11 75 17 Q75 23 63 20" fill="none" stroke="#D8D2C8" strokeWidth={3} strokeLinecap="round" />
+
+        {/* ── 중앙 수직 기둥 (두 컵 사이) ── */}
+        <rect x={42} y={28} width={4} height={24} rx={2} fill="#A07820" />
+
+        {/* ── 하단 플랫폼 ── */}
+        <ellipse cx={44} cy={53} rx={18} ry={4.5} fill="#D8A030" />
+        <ellipse cx={44} cy={55} rx={18} ry={4.5} fill="#C08020" />
+
+        {/* ── 하단 수령 컵 ── */}
+        <path d="M28 53 L30 38 Q44 32 58 38 L60 53 Q44 59 28 53 Z" fill="#F8F4EE" stroke="#D8D2C8" strokeWidth={1.2} />
+        {/* 컵 손잡이 */}
+        <path d="M60 43 Q72 43 72 48 Q72 53 60 50" fill="none" stroke="#D8D2C8" strokeWidth={3} strokeLinecap="round" />
+        {/* 라벨/로고 */}
+        <rect x={36} y={39} width={16} height={12} rx={2} fill="#EEEADA" />
+        <circle cx={44} cy={45} r={5} fill="#C8A878" />
+        <circle cx={44} cy={45} r={3} fill="#A88858" />
+
+        {/* 드립 애니메이션 (위 컵 → 아래 컵) */}
         {progress > 0 && progress < 1 && (
-          <motion.line x1={40} y1={88} x2={40} y2={95} stroke="#5A3010" strokeWidth={2} strokeLinecap="round"
-            animate={{ y2: [92, 97, 92] }} transition={{ repeat: Infinity, duration: 0.6 }} />
+          <motion.line x1={44} y1={28} x2={44} y2={34}
+            stroke="#7A3A08" strokeWidth={2} strokeLinecap="round"
+            animate={{ y2: [32, 36, 32] }}
+            transition={{ repeat: Infinity, duration: 0.4 }} />
         )}
-        <ellipse cx={40} cy={97} rx={10} ry={4} fill="#F5F0E8" />
-        <path d="M30 97 L32 108 Q40 112 48 108 L50 97" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1} />
+
+        {/* 프로그레스 링 */}
         {level > 0 && (
-          <circle cx={40} cy={65} r={18} fill="none" stroke="#FFD700" strokeWidth={3} strokeLinecap="round"
-            strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 40 65)" opacity={0.7}
+          <circle cx={44} cy={46} r={16} fill="none" stroke="#FFD700" strokeWidth={3}
+            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+            transform="rotate(-90 44 46)" opacity={0.7}
             style={{ transition: 'stroke-dashoffset 0.4s linear' }} />
         )}
       </svg>
-      <div className="absolute top-0 right-0 flex items-center justify-center font-black text-white rounded-md px-1"
-        style={{ fontSize: 8, background: '#2D5016', border: '1px solid #4A8028', minWidth: 26, height: 16 }}>
+      <div
+        className="absolute flex items-center justify-center font-black text-white rounded-lg px-1"
+        style={{ fontSize: 9, background: '#2D7016', border: '1.5px solid #4A9028', minWidth: 30, height: 18, letterSpacing: 0, top: -6, right: 0 }}
+      >
         Lv.{level}
       </div>
     </div>
   );
 }
 
+// ── Espresso Machine (cream/white compact style) ───────────────────
 export function EspressoSVG({ level, progress, scale = 1 }: SVGProps) {
-  const circ = 2 * Math.PI * 20;
+  const circ = 2 * Math.PI * 22;
   const offset = circ * (1 - Math.min(1, progress));
-  const dialCirc = 2 * Math.PI * 14;
-  const dialOffset = dialCirc * (1 - Math.min(1, progress));
   const w = 100 * scale;
   const h = 100 * scale;
   return (
     <div className="flex flex-col items-center" style={{ width: w, position: 'relative' }}>
       <svg width={w} height={h} viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
-        <rect x={18} y={20} width={64} height={72} rx={10} fill="#F0ECE4" stroke="#D8D0C0" strokeWidth={2} />
-        <rect x={18} y={20} width={64} height={18} rx={10} fill="#E0D8CC" />
-        <rect x={18} y={30} width={64} height={8} fill="#E0D8CC" />
-        <circle cx={52} cy={52} r={20} fill="#2A2A2A" />
-        <circle cx={52} cy={52} r={16} fill="#1A1A1A" />
-        <ellipse cx={52} cy={52} rx={7} ry={9} fill="#8B5E2A" />
-        <path d="M52 43 Q56 52 52 61" stroke="#5A3A10" strokeWidth={1.5} fill="none" />
-        <circle cx={52} cy={52} r={14} fill="none" stroke="#FFD700" strokeWidth={3.5} strokeLinecap="round"
-          strokeDasharray={dialCirc} strokeDashoffset={dialOffset} transform="rotate(-90 52 52)"
-          style={{ transition: 'stroke-dashoffset 0.4s linear' }} />
-        {level > 0 && (
-          <circle cx={52} cy={52} r={20} fill="none" stroke="rgba(255,215,0,0.3)" strokeWidth={2}
-            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 52 52)"
-            style={{ transition: 'stroke-dashoffset 0.4s linear' }} />
-        )}
-        <circle cx={34} cy={25} r={5} fill="#C8C0B0" />
-        <circle cx={50} cy={25} r={5} fill="#C8C0B0" />
-        <circle cx={66} cy={25} r={5} fill="#C8C0B0" />
-        <rect x={6} y={64} width={18} height={10} rx={5} fill="#8B5E2A" />
-        <ellipse cx={7} cy={69} rx={6} ry={5} fill="#6A4020" />
-        <rect x={76} y={50} width={6} height={24} rx={3} fill="#C8C0B0" />
-        <ellipse cx={79} cy={74} rx={5} ry={3} fill="#B0A890" />
-        <rect x={40} y={86} width={24} height={3} rx={1.5} fill="#C8C0B0" />
-        <rect x={22} y={78} width={56} height={10} rx={3} fill="#2A2A2A" />
-        <text x={50} y={86} textAnchor="middle" fontSize={6} fill="#FFD700" fontWeight="bold" letterSpacing={1}>ESPRESSO</text>
+        {/* Drip tray */}
+        <rect x={14} y={84} width={70} height={5} rx={2} fill="#D8D4CE" />
+        {[22, 32, 42, 52, 62, 72].map(x => (
+          <line key={x} x1={x} y1={84} x2={x} y2={89} stroke="#BEB8B2" strokeWidth={0.8} />
+        ))}
+        <rect x={10} y={87} width={78} height={7} rx={3} fill="#C8C4BC" stroke="#B0ACA6" strokeWidth={1} />
+
+        {/* Main body */}
+        <rect x={14} y={10} width={70} height={75} rx={9} fill="#F2EDE6" stroke="#D8D2CA" strokeWidth={1.5} />
+
+        {/* Top panel */}
+        <rect x={14} y={10} width={70} height={20} rx={9} fill="#E6E0D8" />
+        <rect x={14} y={22} width={70} height={8} fill="#E6E0D8" />
+
+        {/* Display panel */}
+        <rect x={18} y={36} width={32} height={24} rx={4} fill="#D5D0C8" stroke="#C5BFB8" strokeWidth={1} />
+        <rect x={20} y={38} width={28} height={20} rx={3} fill="#C8C2B8" />
+        <rect x={22} y={41} width={24} height={2.5} rx={1.2} fill="#A5A09A" opacity={0.7} />
+        <rect x={22} y={46} width={18} height={2.5} rx={1.2} fill="#A5A09A" opacity={0.5} />
+        <rect x={22} y={51} width={21} height={2.5} rx={1.2} fill="#A5A09A" opacity={0.6} />
+
+        {/* Main dial knob */}
+        <circle cx={67} cy={47} r={12} fill="#D8D2C8" stroke="#C0BAB2" strokeWidth={1.5} />
+        <circle cx={67} cy={47} r={8.5} fill="#C8C2B8" />
+        <circle cx={67} cy={47} r={4} fill="#B8B2A8" />
+        <circle cx={67} cy={36.5} r={2} fill="#8A8480" />
+        <circle cx={74.5} cy={39.5} r={1.5} fill="#9A9490" opacity={0.7} />
+
+        {/* Steam wand arm */}
+        <rect x={4} y={43} width={11} height={4} rx={2} fill="#CCCAB8" />
+        {/* Wand */}
+        <rect x={4} y={47} width={4.5} height={22} rx={2.2} fill="#D0CAC0" />
+        <circle cx={6.2} cy={47} r={3.5} fill="#C0BAB0" />
+        <ellipse cx={6.2} cy={69} rx={4} ry={3} fill="#B0AAA0" />
+
+        {/* Group head */}
+        <rect x={30} y={73} width={38} height={12} rx={4} fill="#C8C2B8" stroke="#B5B0A8" strokeWidth={1} />
+        <rect x={36} y={81} width={26} height={9} rx={3} fill="#B5B0A8" />
+        <rect x={33} y={84} width={32} height={5} rx={2.5} fill="#A8A29A" />
+        {/* Spout holes */}
+        <rect x={47} y={90} width={3.5} height={8} rx={1.7} fill="#989490" />
+        <rect x={53.5} y={90} width={3.5} height={8} rx={1.7} fill="#989490" />
+
+        {/* Espresso drips */}
         {progress > 0.1 && progress < 1 && (
-          <motion.line x1={50} y1={90} x2={50} y2={96} stroke="#3A2010" strokeWidth={2} strokeLinecap="round"
-            animate={{ y2: [93, 97, 93] }} transition={{ repeat: Infinity, duration: 0.5 }} />
+          <>
+            <motion.ellipse cx={48.7} cy={99} rx={1.5} ry={2} fill="#4A2808"
+              animate={{ cy: [97, 103, 97] }}
+              transition={{ repeat: Infinity, duration: 0.5, ease: 'easeIn' }} />
+            <motion.ellipse cx={55.2} cy={99} rx={1.5} ry={2} fill="#4A2808"
+              animate={{ cy: [98, 104, 98] }}
+              transition={{ repeat: Infinity, duration: 0.5, ease: 'easeIn', delay: 0.2 }} />
+          </>
         )}
-        <ellipse cx={50} cy={97} rx={10} ry={4} fill="#F5F0E8" />
-        <path d="M40 97 L42 106 Q50 110 58 106 L60 97" fill="#F5F0E8" stroke="#D4C8B0" strokeWidth={1} />
+
+        {/* Progress ring */}
+        {level > 0 && (
+          <circle cx={49} cy={50} r={22} fill="none" stroke="rgba(255,215,0,0.25)" strokeWidth={2}
+            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+            transform="rotate(-90 49 50)" style={{ transition: 'stroke-dashoffset 0.4s linear' }} />
+        )}
       </svg>
-      <div className="absolute top-0 right-0 flex items-center justify-center font-black text-white rounded-md px-1"
-        style={{ fontSize: 8, background: '#2D5016', border: '1px solid #4A8028', minWidth: 26, height: 16 }}>
-        Lv.{level}
-      </div>
+      <LvBadge level={level} />
     </div>
   );
 }
 
+// ── Water Pump (dark blue industrial dispenser) ────────────────────
 export function WaterPumpSVG({ level, progress, scale = 1 }: SVGProps) {
-  const circ = 2 * Math.PI * 18;
+  const circ = 2 * Math.PI * 20;
   const offset = circ * (1 - Math.min(1, progress));
   const w = 90 * scale;
   const h = 100 * scale;
   return (
     <div className="flex flex-col items-center" style={{ width: w, position: 'relative' }}>
       <svg width={w} height={h} viewBox="0 0 90 100" style={{ overflow: 'visible' }}>
-        {/* Tank body */}
-        <rect x={20} y={30} width={50} height={60} rx={8} fill="#B8D8E8" stroke="#88B8D0" strokeWidth={2} />
-        {/* Water fill */}
-        <clipPath id="tankClip">
-          <rect x={20} y={30} width={50} height={60} rx={8} />
-        </clipPath>
-        <rect x={20} y={55} width={50} height={35} fill="#5ABFE8" opacity={0.7} clipPath="url(#tankClip)" />
-        {/* Water shimmer */}
-        <ellipse cx={45} cy={56} rx={18} ry={4} fill="rgba(120,210,240,0.5)" clipPath="url(#tankClip)" />
-        {/* Tank cap */}
-        <rect x={30} y={24} width={30} height={10} rx={4} fill="#88B8D0" stroke="#6898B0" strokeWidth={1.5} />
+        {/* Main body — sky blue */}
+        <rect x={20} y={14} width={54} height={70} rx={7} fill="#5AC8E8" stroke="#3AAAC8" strokeWidth={2} />
+
+        {/* Top cap */}
+        <rect x={28} y={9} width={38} height={9} rx={4} fill="#3AAAC8" stroke="#2890B0" strokeWidth={1.5} />
         {/* Pump handle */}
-        <rect x={52} y={10} width={8} height={20} rx={3} fill="#6898B0" />
-        <rect x={44} y={8} width={24} height={6} rx={3} fill="#88B8D0" stroke="#6898B0" strokeWidth={1} />
-        {/* Spout */}
-        <path d="M20 70 Q8 70 8 82 L8 88" stroke="#6898B0" strokeWidth={5} fill="none" strokeLinecap="round" />
-        {/* Water cup under spout */}
-        <path d="M3 89 L5 102 Q8 105 11 102 L13 89 Z" fill="#E8F8FF" stroke="#88C8E8" strokeWidth={1.5} />
-        <line x1={3} y1={89} x2={13} y2={89} stroke="#88C8E8" strokeWidth={1.5} />
-        <path d="M4 95 L5 102 Q8 105 11 102 L12 95 Z" fill="#5ABFE8" opacity={0.7} />
-        {/* Falling water droplet */}
+        <rect x={52} y={2} width={8} height={13} rx={3} fill="#6AD8F8" />
+        <rect x={44} y={0} width={22} height={5} rx={2.5} fill="#7AE4FF" stroke="#5AC8E8" strokeWidth={1} />
+
+        {/* Water level window (left side of body) */}
+        <rect x={24} y={20} width={16} height={44} rx={3} fill="#2890B0" stroke="#5AC8E8" strokeWidth={1} />
+        <clipPath id="wpWaterClip">
+          <rect x={24} y={20} width={16} height={44} rx={3} />
+        </clipPath>
+        <rect x={25} y={33} width={14} height={30} fill="#7AE4FF" opacity={0.85} clipPath="url(#wpWaterClip)" />
+        <ellipse cx={32} cy={34} rx={6} ry={2} fill="rgba(180,240,255,0.6)" clipPath="url(#wpWaterClip)" />
+
+        {/* Control panel (right side of body) */}
+        <rect x={44} y={22} width={24} height={40} rx={4} fill="#3AAAC8" />
+        {/* Power button */}
+        <circle cx={56} cy={32} r={7} fill="#2890B0" stroke="#5AC8E8" strokeWidth={1} />
+        <circle cx={56} cy={32} r={4} fill="#E84060" />
+        {/* Mode button */}
+        <circle cx={56} cy={47} r={6} fill="#2890B0" stroke="#5AC8E8" strokeWidth={1} />
+        <circle cx={56} cy={47} r={3.5} fill="#52B788" />
+        {/* Slider */}
+        <rect x={46} y={57} width={22} height={3} rx={1.5} fill="#2890B0" />
+        <rect x={46} y={57} width={12} height={3} rx={1.5} fill="#7AE4FF" />
+
+        {/* Spout arm */}
+        <path d="M20 66 Q8 66 8 76 L8 84" stroke="#3AAAC8" strokeWidth={5} fill="none" strokeLinecap="round" />
+
+        {/* Falling water droplet from spout */}
         {progress > 0 && progress < 1 && (
-          <motion.ellipse cx={8} cy={82} rx={2} ry={3} fill="#5ABFE8"
-            animate={{ cy: [80, 88, 80] }}
+          <motion.ellipse cx={8} cy={84} rx={2} ry={3} fill="#7AE4FF"
+            animate={{ cy: [82, 90, 82] }}
             transition={{ repeat: Infinity, duration: 0.5, ease: 'easeIn' }} />
         )}
+
         {/* Base */}
-        <rect x={18} y={88} width={54} height={6} rx={3} fill="#88B8D0" />
+        <rect x={16} y={82} width={58} height={6} rx={3} fill="#3AAAC8" stroke="#2890B0" strokeWidth={1} />
+
         {/* Progress ring */}
         {level > 0 && (
-          <circle cx={45} cy={58} r={18} fill="none" stroke="#FFD700" strokeWidth={3} strokeLinecap="round"
-            strokeDasharray={circ} strokeDashoffset={offset} transform="rotate(-90 45 58)" opacity={0.7}
+          <circle cx={45} cy={50} r={20} fill="none" stroke="rgba(255,215,0,0.3)" strokeWidth={2.5}
+            strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+            transform="rotate(-90 45 50)" opacity={0.7}
             style={{ transition: 'stroke-dashoffset 0.4s linear' }} />
         )}
       </svg>
-      <div className="absolute top-0 right-0 flex items-center justify-center font-black text-white rounded-md px-1"
-        style={{ fontSize: 8, background: '#2D5016', border: '1px solid #4A8028', minWidth: 26, height: 16 }}>
-        Lv.{level}
-      </div>
+      <LvBadge level={level} />
     </div>
   );
 }

@@ -6,26 +6,6 @@ import dolceImg from '../../TinyCafe_reference_img/Dolce.png';
 import espressoWorkerImg from '../../TinyCafe_reference_img/espresso_worker.png';
 import waterpumpWorkerImg from '../../TinyCafe_reference_img/waterpump_worker.png';
 
-// ── Dolce sprite ───────────────────────────────────────────────────
-// ── Dolce sprite ───────────────────────────────────────────────────
-
-function DolceSprite({ isBrewing }: { isBrewing: boolean }) {
-  return (
-    <div className="relative flex flex-col items-center" style={{ width: 60 }}>
-      <motion.img
-        src={dolceImg}
-        alt="Dolce"
-        style={{ width: 54, height: 54, objectFit: 'contain', imageRendering: 'crisp-edges' }}
-        animate={isBrewing
-          ? { y: [0, -4, 0] }
-          : { y: [0, -3, 0] }
-        }
-        transition={{ repeat: Infinity, duration: isBrewing ? 0.6 : 2 }}
-      />
-    </div>
-  );
-}
-
 // ── Brew button ────────────────────────────────────────────────────
 function BrewButton() {
   const customers = useGameStore(s => s.customers);
@@ -45,7 +25,7 @@ function BrewButton() {
     : false;
 
   const brewPct = isBrewing ? Math.min(1, brewTimer / brewDuration) : 0;
-  const R = 26;
+  const R = 21;
   const circ = 2 * Math.PI * R;
   const dashoffset = circ * (1 - brewPct);
 
@@ -53,8 +33,8 @@ function BrewButton() {
     <button
       className={`relative flex items-center justify-center rounded-full${isPulsing && canBrew ? ' brew-blink' : ''}`}
       style={{
-        width: 62,
-        height: 62,
+        width: 50,
+        height: 50,
         background: 'linear-gradient(135deg,#27AE60,#1E8449)',
         border: '3px solid rgba(255,255,255,0.4)',
         boxShadow: '0 0 12px rgba(46,204,113,0.3)',
@@ -66,24 +46,24 @@ function BrewButton() {
       {/* Brew arc progress */}
       {isBrewing && (
         <svg
-          width={62} height={62}
-          style={{ position: 'absolute', top: -3, left: -3 }}
+          width={50} height={50}
+          style={{ position: 'absolute', top: -2, left: -2 }}
         >
           <circle
-            cx={31} cy={31} r={R}
+            cx={25} cy={25} r={R}
             fill="none"
             stroke="rgba(255,255,255,0.3)"
-            strokeWidth={5}
+            strokeWidth={4}
           />
           <circle
-            cx={31} cy={31} r={R}
+            cx={25} cy={25} r={R}
             fill="none"
             stroke="white"
-            strokeWidth={5}
+            strokeWidth={4}
             strokeLinecap="round"
             strokeDasharray={circ}
             strokeDashoffset={dashoffset}
-            transform="rotate(-90 31 31)"
+            transform="rotate(-90 25 25)"
             style={{ transition: 'stroke-dashoffset 0.15s linear' }}
           />
         </svg>
@@ -114,7 +94,7 @@ function WindowZone() {
   return (
     <div
       className="relative overflow-hidden"
-      style={{ height: 320, flexShrink: 0 }}
+      style={{ height: 285, flexShrink: 0 }}
     >
       {/* Brick wall background */}
       <div className="absolute inset-0 brick-wall" />
@@ -186,15 +166,35 @@ function WindowZone() {
           <div style={{ position: 'absolute', top: 23, left: 0, right: 0, borderTop: '1px solid rgba(0,0,0,0.07)' }} />
         </div>
 
-        {/* Window glass sheen */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(140deg, rgba(255,255,255,0.13) 0%, transparent 55%)', pointerEvents: 'none' }} />
+        {/* Glass blue tint */}
+        <div className="absolute inset-0" style={{ background: 'rgba(180,220,255,0.05)', pointerEvents: 'none' }} />
+        {/* Glass sheen */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(140deg, rgba(255,255,255,0.2) 0%, transparent 45%)', pointerEvents: 'none' }} />
+        {/* Glass reflection lines */}
+        <div className="absolute" style={{ top: 18, left: 22, width: 5, height: 150, background: 'rgba(255,255,255,0.14)', borderRadius: 3, transform: 'rotate(-8deg)', pointerEvents: 'none' }} />
+        <div className="absolute" style={{ top: 35, left: 42, width: 2.5, height: 100, background: 'rgba(255,255,255,0.09)', borderRadius: 2, transform: 'rotate(-8deg)', pointerEvents: 'none' }} />
       </div>
 
-
-      {/* Window sill / ledge — z:25 so it appears above cat and wall overlays */}
+      {/* Tunnel arch shadow (depth effect) */}
       <div
-        className="absolute bottom-0 left-0 right-0"
-        style={{ height: 22, background: 'linear-gradient(180deg,#8B6240,#6A4820)', zIndex: 25 }}
+        className="absolute"
+        style={{
+          bottom: 0, left: '50%', transform: 'translateX(-50%)',
+          width: 62, height: 36, borderRadius: '31px 31px 0 0',
+          background: 'linear-gradient(180deg, rgba(0,0,0,0.10) 0%, transparent 100%)',
+          zIndex: 26, pointerEvents: 'none',
+        }}
+      />
+      {/* Tunnel arch frame (wood) */}
+      <div
+        className="absolute"
+        style={{
+          bottom: 0, left: '50%', transform: 'translateX(-50%)',
+          width: 74, height: 44, borderRadius: '37px 37px 0 0',
+          border: '5px solid #5A3818', borderBottom: 'none',
+          zIndex: 27, pointerEvents: 'none',
+          boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.18)',
+        }}
       />
 
       {/* Pendant lamp */}
@@ -206,7 +206,7 @@ function WindowZone() {
       {/* 고양이 손님 컨테이너 — arch window 밖에 배치해 overflow 클리핑 방지 */}
       <div
         className="absolute"
-        style={{ left: 0, right: 0, bottom: 0, height: 260, overflow: 'visible', zIndex: 15, pointerEvents: 'none' }}
+        style={{ left: 0, right: 0, bottom: -15, height: 260, overflow: 'visible', zIndex: 15, pointerEvents: 'none' }}
       >
         <AnimatePresence>
           {customers.map(c => (
@@ -295,107 +295,126 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
       {/* Tile wall background */}
       <div className="absolute inset-0 tile-wall" />
 
-      {/* Upper wood shelf */}
-      <div
-        className="absolute counter-wood"
-        style={{ top: 0, left: 0, right: 0, height: 14, zIndex: 2 }}
-      />
+      {/* ── 2nd Floor: Drip Coffee + Ladder + Dolce ─── */}
 
-      {/* Equipment shelf surface */}
-      <div
-        className="absolute"
-        style={{
-          top: 0, left: 8, right: 8, height: 130,
-          background: 'rgba(255,248,235,0.6)',
-          borderRadius: '0 0 10px 10px',
-          border: '2px solid #C4A070',
-          borderTop: 'none',
-          zIndex: 1,
-        }}
-      />
+      {/* BrewButton floats above drip machine */}
+      <div className="absolute flex items-center justify-center"
+        style={{ top: -5, left: 0, right: 0, height: 50, zIndex: 12, pointerEvents: 'none' }}>
+        <div style={{ pointerEvents: 'auto' }}>
+          <BrewButton />
+        </div>
+      </div>
 
-      {/* Equipment row: [Espresso | Drip | WaterPump] */}
-      <div
-        className="absolute flex items-start"
-        style={{ top: 10, left: 0, right: 0, zIndex: 4 }}
-      >
-        {/* LEFT: Espresso Machine (hidden until unlocked) */}
-        <div className="flex flex-col items-center" style={{ flex: 1 }}>
+      {/* Ladder + Dolce (LEFT) + Drip machine (RIGHT) — bottom-aligned (touch counter) */}
+      <div className="absolute flex items-end justify-center"
+        style={{ top: 21, left: 0, right: 0, height: 120, zIndex: 4 }}>
+
+        {/* 스텝래더 (상단 플랫폼 + A-프레임) */}
+        <div className="relative flex-shrink-0" style={{ width: 44, height: 85, marginRight: 4 }}>
+          <svg width={44} height={85} viewBox="0 0 52 90"
+            style={{ position: 'absolute', top: 0, left: 0 }}>
+            {/* === 상단 플랫폼 === */}
+            {/* 표면 */}
+            <rect x={2} y={1} width={48} height={12} rx={3} fill="#D8A030" />
+            {/* 앞면 두께 */}
+            <rect x={2} y={10} width={48} height={6} rx={2} fill="#B07820" />
+            {/* 좌우 지지대 */}
+            <rect x={5} y={15} width={5} height={9} rx={1.5} fill="#9A6420" />
+            <rect x={42} y={15} width={5} height={9} rx={1.5} fill="#9A6420" />
+
+            {/* === 다리 (A-프레임) === */}
+            <line x1={7} y1={24} x2={3} y2={88} stroke="#8B5E2A" strokeWidth={5} strokeLinecap="round" />
+            <line x1={45} y1={24} x2={49} y2={88} stroke="#8B5E2A" strokeWidth={5} strokeLinecap="round" />
+
+            {/* === 발판 (다리 각도에 맞게) === */}
+            {[0.12, 0.27, 0.42, 0.57, 0.72, 0.87].map((t, i) => {
+              const y = 24 + 64 * t;
+              const lx = 7 - 4 * t;
+              const rx = 45 + 4 * t;
+              return <line key={i} x1={lx} y1={y} x2={rx} y2={y} stroke="#A0722A" strokeWidth={4} strokeLinecap="round" />;
+            })}
+
+            {/* === 가로 보강재 (중간) === */}
+            <line x1={5} y1={56} x2={47} y2={56} stroke="#8B5E2A" strokeWidth={2.5} strokeLinecap="round" />
+
+            {/* === 발받침 === */}
+            <ellipse cx={3} cy={88} rx={5} ry={2.5} fill="#6A4010" />
+            <ellipse cx={49} cy={88} rx={5} ry={2.5} fill="#6A4010" />
+          </svg>
+
+          {/* Dolce — 플랫폼 위에 서 있음 */}
+          <div className="absolute" style={{ top: -30, left: 3, zIndex: 5 }}>
+            <motion.img src={dolceImg} alt="Dolce"
+              style={{ width: 38, height: 38, objectFit: 'contain', imageRendering: 'crisp-edges' }}
+              animate={!!brewingId ? { y: [0, -4, 0] } : { y: [0, -2, 0] }}
+              transition={{ repeat: Infinity, duration: !!brewingId ? 0.7 : 2 }} />
+          </div>
+        </div>
+
+        {/* Drip machine on the RIGHT */}
+        <button onClick={() => openUpgrade('drip_coffee')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}>
+          <HandDripSVG level={drip.level} progress={dripProg} scale={0.85} />
+        </button>
+      </div>
+
+      {/* 2nd ↔ 1st floor counter */}
+      <div className="absolute counter-wood"
+        style={{ top: 129, left: 0, right: 0, height: 18, zIndex: 2 }} />
+      {/* Shadow below 2nd floor */}
+      <div className="absolute"
+        style={{ top: 129, left: 0, right: 0, height: 20,
+          background: 'linear-gradient(180deg,rgba(0,0,0,0.14),transparent)',
+          zIndex: 3, pointerEvents: 'none' }} />
+
+      {/* ── 1st Floor: Espresso (L) + WaterPump (R) ─── */}
+
+      {/* 1st floor wood shelf */}
+      <div className="absolute counter-wood"
+        style={{ top: 147, left: 0, right: 0, height: 14, zIndex: 2 }} />
+
+      {/* 1st floor MACHINES */}
+      <div className="absolute flex"
+        style={{ top: 168, left: 0, right: 0, zIndex: 4 }}>
+
+        <div className="flex-1 flex flex-col items-center">
           {espresso && espresso.level > 0 && (
-            <button
-              onClick={() => openUpgrade('espresso_machine')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <EspressoSVG level={espresso.level} progress={espProg} scale={0.85} />
+            <button onClick={() => openUpgrade('espresso_machine')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <EspressoSVG level={espresso.level} progress={espProg} scale={0.82} />
             </button>
           )}
         </div>
 
-        {/* CENTER: Drip Coffee (Dolce's machine) */}
-        <div className="flex flex-col items-center" style={{ flex: 1 }}>
-          <button
-            onClick={() => openUpgrade('drip_coffee')}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-          >
-            <HandDripSVG level={drip.level} progress={dripProg} />
-          </button>
-        </div>
-
-        {/* RIGHT: Water Pump (hidden until unlocked) */}
-        <div className="flex flex-col items-center" style={{ flex: 1 }}>
+        <div className="flex-1 flex flex-col items-center" style={{ paddingTop: 7 }}>
           {waterPump && waterPump.level > 0 && (
-            <button
-              onClick={() => openUpgrade('water_pump')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <WaterPumpSVG level={waterPump.level} progress={pumpProg} scale={0.85} />
+            <button onClick={() => openUpgrade('water_pump')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <WaterPumpSVG level={waterPump.level} progress={pumpProg} scale={0.82} />
             </button>
           )}
         </div>
       </div>
 
-      {/* Counter divider below shelf */}
-      <div
-        className="absolute counter-wood"
-        style={{ top: 130, left: 0, right: 0, height: 18, zIndex: 2 }}
-      />
+      {/* 1st floor WORKERS — 바닥에 발 닿도록 */}
+      <div className="absolute flex"
+        style={{ bottom: 45, left: 0, right: 0, zIndex: 4 }}>
 
-      {/* Worker row: [espresso_worker | Dolce+BrewButton | waterpump_worker] */}
-      <div
-        className="absolute flex items-start"
-        style={{ top: 148, left: 0, right: 0, zIndex: 10 }}
-      >
-        {/* LEFT: Espresso worker */}
-        <div className="flex items-center justify-center pt-2" style={{ flex: 1 }}>
+        <div className="flex-1 flex justify-center">
           {espresso && espresso.level > 0 && (
-            <motion.img
-              src={espressoWorkerImg}
-              alt="espresso worker"
+            <motion.img src={espressoWorkerImg} alt="espresso worker"
               style={{ width: 46, height: 46, objectFit: 'contain' }}
               animate={{ x: [-2, 2, -2] }}
-              transition={{ repeat: Infinity, duration: 0.8 }}
-            />
+              transition={{ repeat: Infinity, duration: 0.8 }} />
           )}
         </div>
 
-        {/* CENTER: BrewButton + Dolce */}
-        <div className="flex flex-col items-center" style={{ flex: 1 }}>
-          <BrewButton />
-          <div style={{ marginTop: 8 }}>
-            <DolceSprite isBrewing={!!brewingId} />
-          </div>
-        </div>
-
-        {/* RIGHT: Water pump worker */}
-        <div className="flex items-center justify-center pt-2" style={{ flex: 1 }}>
+        <div className="flex-1 flex justify-center">
           {waterPump && waterPump.level > 0 && (
-            <motion.img
-              src={waterpumpWorkerImg}
-              alt="waterpump worker"
-              style={{ width: 46, height: 46, objectFit: 'contain' }}
+            <motion.img src={waterpumpWorkerImg} alt="waterpump worker"
+              style={{ width: 46, height: 46, objectFit: 'contain', position: 'relative', left: -35 }}
               animate={{ rotate: [-5, 5, -5] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-            />
+              transition={{ repeat: Infinity, duration: 1.5 }} />
           )}
         </div>
       </div>
@@ -431,7 +450,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
       {/* Right-side quick buttons */}
       <div
         className="absolute right-2 flex flex-col gap-2"
-        style={{ top: 204, zIndex: 20 }}
+        style={{ top: 219, zIndex: 20 }}
       >
         {[
           { icon: '🛠️', label: '시설', onClick: onOpenFacility },
@@ -458,21 +477,8 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
 
       {/* Floor */}
       <div
-        className="absolute wood-floor"
-        style={{ bottom: 0, left: 0, right: 0, height: '40%', zIndex: 0 }}
-      />
-
-      {/* Floor shadow below shelf */}
-      <div
-        className="absolute"
-        style={{
-          top: 130,
-          left: 0, right: 0,
-          height: 20,
-          background: 'linear-gradient(180deg,rgba(0,0,0,0.14),transparent)',
-          zIndex: 3,
-          pointerEvents: 'none',
-        }}
+        className="absolute counter-wood"
+        style={{ bottom: 0, left: 0, right: 0, height: 55, zIndex: 0 }}
       />
 
       {/* Coin FX */}
