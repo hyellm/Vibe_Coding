@@ -82,24 +82,6 @@ export default function MissionBar() {
             </div>
           </div>
 
-          {/* Right: STORY! button */}
-          <button
-            className="flex items-center gap-1 rounded-xl px-2 py-1 flex-shrink-0"
-            style={{
-              background: 'linear-gradient(135deg,#FF9F43,#E07830)',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 2px 6px rgba(255,159,67,0.4)',
-            }}
-          >
-            <span style={{ fontSize: 14 }}>🐱</span>
-            <span
-              className="font-black text-white"
-              style={{ fontSize: 9 }}
-            >
-              STORY!
-            </span>
-          </button>
         </>
       ) : (
         <div className="flex items-center justify-center flex-1 gap-2">

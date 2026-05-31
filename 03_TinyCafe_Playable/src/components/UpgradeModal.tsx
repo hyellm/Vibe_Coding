@@ -1,11 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getUpgradeCost, getCoinsPerItem, getProductionTimeMs } from '../store/gameStore';
-
-function fmt(n: number): string {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'm';
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'k';
-  return Math.floor(n).toString();
-}
+import { fmt } from '../utils/fmt';
 
 function StatRow({ label, value }: { label: string; value: string }) {
   return (
@@ -110,7 +105,7 @@ function EquipmentPanel({ eq, coins, onBuy, onUpgrade, onClose, onPrev, onNext, 
   const upgradeCost = getUpgradeCost(eq);
   const coinsPerItem = getCoinsPerItem(eq);
   const prodSec = Math.round(getProductionTimeMs(eq) / 1000);
-  const incomePerSec = (coinsPerItem / prodSec).toFixed(1);
+  const incomePerSec = fmt(coinsPerItem / prodSec);
 
   const canBuy = coins >= eq.unlockCost;
   const canUpgrade = !isLocked && coins >= upgradeCost && eq.level < eq.maxLevel;

@@ -2,14 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getCoinsPerItem, getProductionTimeMs, getUpgradeCost } from '../store/gameStore';
 import { EquipmentSVG } from './EquipmentSVGs';
+import { fmt } from '../utils/fmt';
 import type { Equipment } from '../types';
-
-function fmt(n: number): string {
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + 'b';
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'm';
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'k';
-  return Math.floor(n).toString();
-}
 
 function getBuffText(eq: Equipment): string {
   if (eq.id === 'bathhouse') return '치즈 생산량 증가';
@@ -43,12 +37,12 @@ function MachineInfoOverlay({
 
   const prodSec = getProductionTimeMs(eq) / 1000;
   const mult = 1 + (albanetWorkers[eq.id] ?? 0);
-  const incomePerSec = eq.id === 'bathhouse' ? null : ((getCoinsPerItem(eq) * mult) / prodSec).toFixed(1);
+  const incomePerSec = eq.id === 'bathhouse' ? null : fmt((getCoinsPerItem(eq) * mult) / prodSec);
 
   return (
     <motion.div
       className="absolute inset-0 flex flex-col"
-      style={{ background: 'rgba(0,0,0,0.82)', zIndex: 80 }}
+      style={{ background: 'rgba(0,0,0,0.62)', zIndex: 80 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -60,7 +54,7 @@ function MachineInfoOverlay({
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', damping: 18 }}
         >
-          <EquipmentSVG id={eq.id} level={eq.level} progress={0} scale={2.2} />
+          <EquipmentSVG id={eq.id} level={eq.level} progress={0} scale={2.2} hideLv hideBar />
         </motion.div>
       </div>
 
@@ -115,11 +109,6 @@ function MachineInfoOverlay({
           >
             🪙 {fmt(eq.unlockCost)}
           </motion.button>
-        ) : eq.id === 'drip_coffee' ? (
-          <div className="w-full py-3 rounded-2xl text-center font-bold"
-            style={{ fontSize: 13, background: '#F0EDE8', color: '#8A6040' }}>
-            돌체 전용 장비
-          </div>
         ) : (
           <motion.button
             whileTap={canUpgrade ? { scale: 0.96 } : {}}
@@ -194,7 +183,7 @@ export default function FacilityScreen({ onClose }: { onClose: () => void }) {
           const isLocked = eq.level === 0;
           const prodSec = getProductionTimeMs(eq) / 1000;
           const mult = 1 + (albanetWorkers[eq.id] ?? 0);
-          const incPerSec = ((getCoinsPerItem(eq) * mult) / prodSec).toFixed(1);
+          const incPerSec = fmt((getCoinsPerItem(eq) * mult) / prodSec);
           const upgradeCost = getUpgradeCost(eq);
 
           return (

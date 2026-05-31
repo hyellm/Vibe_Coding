@@ -1,12 +1,6 @@
 import { motion } from 'framer-motion';
 import { useGameStore, getAlbanetHireCost } from '../store/gameStore';
-
-function fmt(n: number): string {
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + 'b';
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'm';
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'k';
-  return Math.floor(n).toString();
-}
+import { fmt } from '../utils/fmt';
 
 const TEAM_NAMES: Record<string, string> = {
   drip_coffee: '드립 팀',

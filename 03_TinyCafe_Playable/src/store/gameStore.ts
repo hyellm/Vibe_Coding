@@ -211,12 +211,11 @@ export const useGameStore = create<GameState & GameActions>()(
           const newEquipment = state.equipment.map(eq => {
             if (eq.level === 0) return eq;
             if (eq.id === 'bathhouse') {
-              // Bathhouse generates cheese passively
               return { ...eq, productionProgress: eq.productionProgress + delta };
             }
             const newProg = eq.productionProgress + delta;
             const ptMs = getProductionTimeMs(eq);
-            if (newProg >= ptMs && newCoinSlots.length < 15) {
+            if (eq.productionProgress >= ptMs && newCoinSlots.length < 15) {
               const albanetMult = 1 + (state.albanetWorkers[eq.id] ?? 0);
               newCoinSlots.push({
                 id: `slot_${eq.id}_${Date.now()}_${Math.random().toString(36).slice(2)}`,
@@ -279,18 +278,15 @@ export const useGameStore = create<GameState & GameActions>()(
           let newBrewEquipmentId = state.brewEquipmentId;
           let customersServedGain = 0;
 
+          let brewCoins = 0;
           if (newBrewingId && newBrewTimer >= newBrewDuration) {
             const brewedCustomer = newCustomers.find(c => c.id === newBrewingId);
             if (brewedCustomer) {
               const eq = newEquipment.find(e => e.id === newBrewEquipmentId);
               const albanetMult = 1 + (state.albanetWorkers[newBrewEquipmentId ?? ''] ?? 0);
               const amount = eq ? Math.floor(getCoinsPerItem(eq) * 3 * albanetMult) : 30;
-              newCoinSlots.push({
-                id: `slot_serve_${Date.now()}`,
-                drinkEmoji: brewedCustomer.desiredEmoji,
-                amount,
-                createdAt: Date.now(),
-              });
+              // 손님 브루잉 완료: 슬롯 없이 코인 직접 지급
+              brewCoins = amount;
               customersServedGain = 1;
               newCustomers = newCustomers.map(c =>
                 c.id === newBrewingId ? { ...c, state: 'drinking' as const, stateTimer: 0 } : c
@@ -386,7 +382,16 @@ export const useGameStore = create<GameState & GameActions>()(
 
           // 6. Clean up old FX
           const now = Date.now();
-          const filteredFXs = state.coinFXs.filter(fx => now - fx.createdAt < 2000);
+          const filteredFXs = state.coinFXs.filter(fx => now - fx.createdAt < 2500);
+          if (brewCoins > 0) {
+            filteredFXs.push({
+              id: `fx_brew_${Date.now()}`,
+              x: 195, y: 195,
+              amount: brewCoins,
+              createdAt: Date.now(),
+              large: true,
+            });
+          }
 
           return {
             ...state,
@@ -405,6 +410,7 @@ export const useGameStore = create<GameState & GameActions>()(
             customersServed: newServedTotal,
             resources: {
               ...state.resources,
+              coins: state.resources.coins + brewCoins,
               cheese: state.resources.cheese + cheeseGain,
               hearts: state.resources.hearts + heartsGained,
             },
@@ -449,7 +455,7 @@ export const useGameStore = create<GameState & GameActions>()(
               {
                 id: `fx_${Date.now()}_${Math.random().toString(36).slice(2)}`,
                 x: 195,
-                y: 700,
+                y: 565,
                 amount: slot.amount,
                 createdAt: Date.now(),
               },

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getProductionTimeMs } from '../store/gameStore';
+import { fmt } from '../utils/fmt';
 import CatCustomer from './CatCustomer';
 import { HandDripSVG, EspressoSVG, WaterPumpSVG } from './EquipmentSVGs';
 import dolceImg from '../../TinyCafe_reference_img/Dolce.png';
@@ -19,6 +20,9 @@ function BrewButton() {
   const isBrewing = !!brewingId;
   const isPulsing = !!waitingCustomer && !isBrewing;
 
+  // Hidden when idle or brewing
+  if (!waitingCustomer || isBrewing) return null;
+
   // Check if the desired equipment is unlocked
   const canBrew = waitingCustomer
     ? equipment.some(e => e.id === waitingCustomer.desiredMenuId && e.level > 0)
@@ -33,44 +37,41 @@ function BrewButton() {
     <button
       className={`relative flex items-center justify-center rounded-full${isPulsing && canBrew ? ' brew-blink' : ''}`}
       style={{
-        width: 50,
-        height: 50,
+        width: 49,
+        height: 49,
         background: 'linear-gradient(135deg,#27AE60,#1E8449)',
-        border: '3px solid rgba(255,255,255,0.4)',
+        border: 'none',
         boxShadow: '0 0 12px rgba(46,204,113,0.3)',
         cursor: isPulsing && canBrew ? 'pointer' : 'default',
         outline: 'none',
       }}
       onClick={isPulsing && canBrew ? tapBrew : undefined}
     >
-      {/* Brew arc progress */}
-      {isBrewing && (
-        <svg
-          width={50} height={50}
-          style={{ position: 'absolute', top: -2, left: -2 }}
-        >
+      {/* White ring + optional progress arc — all in one SVG so centers are identical */}
+      <svg
+        width={49} height={49}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+      >
+        {/* Static white border ring */}
+        <circle cx={24.5} cy={24.5} r={23} fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={3} />
+        {/* Progress arc */}
+        {isBrewing && (
           <circle
-            cx={25} cy={25} r={R}
-            fill="none"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={4}
-          />
-          <circle
-            cx={25} cy={25} r={R}
+            cx={24.5} cy={24.5} r={R}
             fill="none"
             stroke="white"
             strokeWidth={4}
             strokeLinecap="round"
             strokeDasharray={circ}
             strokeDashoffset={dashoffset}
-            transform="rotate(-90 25 25)"
+            transform="rotate(-90 24.5 24.5)"
             style={{ transition: 'stroke-dashoffset 0.15s linear' }}
           />
-        </svg>
-      )}
+        )}
+      </svg>
 
-      {/* Kettle icon */}
-      <svg width={30} height={30} viewBox="0 0 30 30" style={{ zIndex: 1 }}>
+      {/* Kettle icon — always visible */}
+      <svg width={28} height={28} viewBox="0 0 30 30" style={{ zIndex: 1 }}>
         <ellipse cx={14} cy={18} rx={11} ry={8} fill="white" />
         <rect x={4} y={12} width={20} height={3} rx={1.5} fill="white" />
         <path d="M24 15 Q30 12 29 18 Q30 22 24 20" fill="white" />
@@ -78,7 +79,7 @@ function BrewButton() {
         <path d="M10 8 Q14 4 18 8" stroke="white" strokeWidth={2} fill="none" strokeLinecap="round" />
       </svg>
 
-      {/* Lock indicator if equipment not unlocked */}
+      {/* Lock indicator */}
       {waitingCustomer && !canBrew && (
         <div className="absolute -top-1 -right-1" style={{ fontSize: 14 }}>🔒</div>
       )}
@@ -251,17 +252,42 @@ function WindowZone() {
 }
 
 // ── Coin float FX ──────────────────────────────────────────────────
-function CoinFX({ fx }: { fx: { id: string; x: number; y: number; amount: number } }) {
+function CoinFX({ fx }: { fx: { id: string; x: number; y: number; amount: number; large?: boolean } }) {
+  if (fx.large) {
+    return (
+      <div
+        className="absolute pointer-events-none"
+        style={{ left: 0, right: 0, top: fx.y, display: 'flex', justifyContent: 'center', zIndex: 50 }}
+      >
+        <motion.div
+          className="flex items-center gap-1.5"
+          style={{ whiteSpace: 'nowrap' }}
+          initial={{ opacity: 0, y: 0, scale: 0.7 }}
+          animate={{ opacity: [0, 1, 1, 0], y: -60, scale: [0.7, 1.05, 1, 1] }}
+          transition={{ duration: 2.0, times: [0, 0.15, 0.7, 1], ease: 'easeOut' }}
+        >
+          <span style={{ fontSize: 20, fontWeight: 900, color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.7)' }}>+</span>
+          <span style={{ fontSize: 18 }}>🪙</span>
+          <span style={{ fontSize: 22, fontWeight: 900, color: 'white', textShadow: '0 2px 6px rgba(0,0,0,0.7)' }}>{fmt(fx.amount)}</span>
+        </motion.div>
+      </div>
+    );
+  }
   return (
-    <motion.div
-      className="absolute font-black pointer-events-none"
-      style={{ left: fx.x, top: fx.y, zIndex: 50, fontSize: 13, color: '#FFD700', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
-      initial={{ opacity: 1, y: 0, scale: 1 }}
-      animate={{ opacity: 0, y: -60, scale: 1.3 }}
-      transition={{ duration: 1.6, ease: 'easeOut' }}
+    <div
+      className="absolute pointer-events-none"
+      style={{ left: 0, right: 0, top: fx.y, display: 'flex', justifyContent: 'center', zIndex: 50 }}
     >
-      +{fx.amount}🪙
-    </motion.div>
+      <motion.div
+        className="font-black"
+        style={{ fontSize: 13, color: '#C76508', textShadow: '0 1px 4px rgba(0,0,0,0.6)', whiteSpace: 'nowrap' }}
+        initial={{ opacity: 1, y: 0, scale: 1 }}
+        animate={{ opacity: 0, y: -60, scale: 1.3 }}
+        transition={{ duration: 1.6, ease: 'easeOut' }}
+      >
+        +🪙{fmt(fx.amount)}
+      </motion.div>
+    </div>
   );
 }
 
@@ -269,8 +295,12 @@ function CoinFX({ fx }: { fx: { id: string; x: number; y: number; amount: number
 function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: () => void; onOpenSmartphone: () => void }) {
   const equipment = useGameStore(s => s.equipment);
   const brewingId = useGameStore(s => s.brewingCustomerId);
-  const coinFXs = useGameStore(s => s.coinFXs);
+  const brewTimer = useGameStore(s => s.brewTimer);
+  const brewDuration = useGameStore(s => s.brewDuration);
   const openUpgrade = useGameStore(s => s.openUpgrade);
+
+  const isBrewing = !!brewingId;
+  const brewPct = isBrewing ? Math.min(1, brewTimer / brewDuration) : 0;
 
   const drip = equipment.find(e => e.id === 'drip_coffee')!;
   const espresso = equipment.find(e => e.id === 'espresso_machine');
@@ -297,9 +327,9 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
 
       {/* ── 2nd Floor: Drip Coffee + Ladder + Dolce ─── */}
 
-      {/* BrewButton floats above drip machine */}
+      {/* BrewButton floats above drip machine — paddingLeft: 52 shifts center over drip (ladder 44 + margin 4 + half offset) */}
       <div className="absolute flex items-center justify-center"
-        style={{ top: -5, left: 0, right: 0, height: 50, zIndex: 12, pointerEvents: 'none' }}>
+        style={{ top: -5, left: 0, right: 0, height: 50, zIndex: 12, pointerEvents: 'none', paddingLeft: 52 }}>
         <div style={{ pointerEvents: 'auto' }}>
           <BrewButton />
         </div>
@@ -354,7 +384,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         {/* Drip machine on the RIGHT */}
         <button onClick={() => openUpgrade('drip_coffee')}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}>
-          <HandDripSVG level={drip.level} progress={dripProg} scale={0.85} />
+          <HandDripSVG level={drip.level} progress={dripProg} scale={0.85} showCup={isBrewing} brewPct={brewPct} />
         </button>
       </div>
 
@@ -386,7 +416,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
           )}
         </div>
 
-        <div className="flex-1 flex flex-col items-center" style={{ paddingTop: 7 }}>
+        <div className="flex-1 flex flex-col items-center">
           {waterPump && waterPump.level > 0 && (
             <button onClick={() => openUpgrade('water_pump')}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
@@ -396,9 +426,9 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         </div>
       </div>
 
-      {/* 1st floor WORKERS — 바닥에 발 닿도록 */}
+      {/* 1st floor WORKERS */}
       <div className="absolute flex"
-        style={{ bottom: 45, left: 0, right: 0, zIndex: 4 }}>
+        style={{ bottom: 25, left: 0, right: 0, zIndex: 4 }}>
 
         <div className="flex-1 flex justify-center">
           {espresso && espresso.level > 0 && (
@@ -412,7 +442,7 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         <div className="flex-1 flex justify-center">
           {waterPump && waterPump.level > 0 && (
             <motion.img src={waterpumpWorkerImg} alt="waterpump worker"
-              style={{ width: 46, height: 46, objectFit: 'contain', position: 'relative', left: -35 }}
+              style={{ width: 58, height: 58, objectFit: 'contain', position: 'relative', left: -32 }}
               animate={{ rotate: [-5, 5, -5] }}
               transition={{ repeat: Infinity, duration: 1.5 }} />
           )}
@@ -481,18 +511,14 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
         style={{ bottom: 0, left: 0, right: 0, height: 55, zIndex: 0 }}
       />
 
-      {/* Coin FX */}
-      <AnimatePresence>
-        {coinFXs.map(fx => (
-          <CoinFX key={fx.id} fx={fx} />
-        ))}
-      </AnimatePresence>
     </div>
   );
 }
 
 // ── Main CafeView ──────────────────────────────────────────────────
 export default function CafeView({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: () => void; onOpenSmartphone: () => void }) {
+  const coinFXs = useGameStore(s => s.coinFXs);
+
   return (
     <div
       className="flex flex-col"
@@ -504,6 +530,13 @@ export default function CafeView({ onOpenFacility, onOpenSmartphone }: { onOpenF
         style={{ height: 20, flexShrink: 0, borderTop: '3px solid #C49060', borderBottom: '3px solid #5A3020' }}
       />
       <CafeInterior onOpenFacility={onOpenFacility} onOpenSmartphone={onOpenSmartphone} />
+
+      {/* Coin FX — CafeView 전체 기준으로 렌더링 (overflow 없음) */}
+      <AnimatePresence>
+        {coinFXs.map(fx => (
+          <CoinFX key={fx.id} fx={fx} />
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

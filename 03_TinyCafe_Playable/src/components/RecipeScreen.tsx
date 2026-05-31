@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
+import { MENU_IMAGES } from '../utils/menuImages';
 
 interface RecipeData {
   id: string;
@@ -83,7 +84,9 @@ function RecipeDetail({ recipe, onBack }: { recipe: RecipeData; onBack: () => vo
       <div className="flex items-center justify-center py-6">
         <div className="flex items-center justify-center rounded-full"
           style={{ width: 140, height: 140, background: '#EDE8DF', fontSize: 72 }}>
-          {recipe.emoji}
+          {MENU_IMAGES[recipe.id]
+            ? <img src={MENU_IMAGES[recipe.id]} alt={recipe.name} style={{ width: 90, height: 90, objectFit: 'contain' }} />
+            : recipe.emoji}
         </div>
       </div>
 
@@ -134,8 +137,6 @@ export default function RecipeScreen({ onClose }: { onClose: () => void }) {
     return (eq?.level ?? 0) > 0;
   };
 
-  const unlockedRecipes = RECIPES.filter(r => !r.locked && isUnlocked(r));
-
   return (
     <div className="absolute inset-0 flex flex-col" style={{ background: '#F5F0E8', zIndex: 70 }}>
       {/* Header */}
@@ -144,23 +145,24 @@ export default function RecipeScreen({ onClose }: { onClose: () => void }) {
         <div className="font-black" style={{ fontSize: 18, color: '#1A1A1A' }}>레시피</div>
       </div>
 
-      {/* Horizontal icon scroll bar */}
-      <div className="flex gap-2 px-4 py-3 overflow-x-auto" style={{ scrollbarWidth: 'none', borderBottom: '1px solid #E0D8CC' }}>
-        {RECIPES.map(r => (
-          <button
-            key={r.id}
-            onClick={() => isUnlocked(r) && !r.locked && setSelected(r)}
-            className="flex items-center justify-center rounded-full flex-shrink-0"
-            style={{
-              width: 44, height: 44,
-              background: isUnlocked(r) ? '#2D5016' : '#C0B8A8',
-              border: 'none', cursor: isUnlocked(r) ? 'pointer' : 'default',
-              fontSize: 22,
-            }}
-          >
-            {r.locked ? '?' : r.emoji}
-          </button>
-        ))}
+      {/* Category bar */}
+      <div className="flex gap-2 px-4 py-3" style={{ borderBottom: '1px solid #E0D8CC' }}>
+        <div
+          className="flex items-center justify-center rounded-full flex-shrink-0"
+          style={{ width: 44, height: 44, background: '#2D5016' }}
+        >
+          <svg width={26} height={26} viewBox="0 0 26 26">
+            <g transform="rotate(-30 13 13)">
+              {/* Bean body */}
+              <ellipse cx={13} cy={13} rx={7.5} ry={11} fill="white" />
+              {/* Crease — S-curve through center */}
+              <path
+                d="M13 3.5 Q17 8 13 13 Q9 18 13 22.5"
+                fill="none" stroke="#2D5016" strokeWidth={2} strokeLinecap="round"
+              />
+            </g>
+          </svg>
+        </div>
       </div>
 
       {/* Recipe list */}
@@ -176,8 +178,10 @@ export default function RecipeScreen({ onClose }: { onClose: () => void }) {
             >
               {/* Icon */}
               <div className="flex items-center justify-center rounded-full flex-shrink-0 relative"
-                style={{ width: 48, height: 48, background: unlocked ? '#E8F4E0' : '#D8D0C4', fontSize: 26 }}>
-                {r.locked ? '?' : r.emoji}
+                style={{ width: 48, height: 48, background: unlocked ? 'transparent' : '#D8D0C4', fontSize: 26 }}>
+                {r.locked ? '?' : MENU_IMAGES[r.id]
+                  ? <img src={MENU_IMAGES[r.id]} alt="" style={{ width: 48, height: 48, objectFit: 'contain' }} />
+                  : r.emoji}
                 {r.lvBadge !== null && unlocked && !r.locked && (
                   <div className="absolute -bottom-1 -right-1 font-black rounded-md px-1"
                     style={{ fontSize: 8, background: '#52B788', color: 'white', minWidth: 22, textAlign: 'center' }}>

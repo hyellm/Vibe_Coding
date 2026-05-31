@@ -64,6 +64,7 @@ export interface CoinFX {
   y: number;
   amount: number;
   createdAt: number;
+  large?: boolean;
 }
 
 export interface Mission {

@@ -11,6 +11,7 @@ const APPS = [
   { id: 'facility', icon: '🛠️', label: '시설', bg: '#E8A020' },
   { id: 'albanet', icon: '🐭', label: '알바넷', bg: '#52B788' },
   { id: 'recipe', icon: '📋', label: '레시피', bg: '#E84060' },
+  { id: 'worldmap', icon: '🗺️', label: '월드맵', bg: '#2980B9' },
   { id: 'catbook', icon: '📘', label: 'Catbook', bg: '#4A90D9' },
   { id: 'mail', icon: '📬', label: '메일', bg: '#9B59B6' },
   { id: 'camera', icon: '📷', label: '카메라', bg: '#5A5A5A' },
