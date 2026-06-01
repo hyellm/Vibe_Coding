@@ -19,8 +19,8 @@ const APPS = [
   { id: 'newgame', icon: '🔄', label: '새 게임', bg: '#C0392B' },
 ];
 
-export default function SmartphoneScreen({ onClose }: { onClose: () => void }) {
-  const [appScreen, setAppScreen] = useState<AppScreen>('home');
+export default function SmartphoneScreen({ onClose, initialScreen = 'home' }: { onClose: () => void; initialScreen?: AppScreen }) {
+  const [appScreen, setAppScreen] = useState<AppScreen>(initialScreen);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const resetGame = useGameStore(s => s.resetGame);
 

@@ -72,6 +72,7 @@ export default function App() {
   const tick = useGameStore(s => s.tick);
   const lastTimeRef = useRef(Date.now());
   const [overlay, setOverlay] = useState<OverlayType>(null);
+  const [smartphoneInit, setSmartphoneInit] = useState<'home' | 'facility' | 'albanet' | 'recipe'>('home');
 
   useEffect(() => {
     lastTimeRef.current = Date.now();
@@ -105,7 +106,7 @@ export default function App() {
       <CoinSlotBar />
 
       {/* Game overlays */}
-      <UpgradeModal />
+      <UpgradeModal onHireWorker={() => { setSmartphoneInit('albanet'); setOverlay('smartphone'); }} />
       <OfflinePopup />
 
       {/* Screen overlays */}
@@ -114,7 +115,7 @@ export default function App() {
           <FacilityScreen key="facility" onClose={() => setOverlay(null)} />
         )}
         {overlay === 'smartphone' && (
-          <SmartphoneScreen key="smartphone" onClose={() => setOverlay(null)} />
+          <SmartphoneScreen key="smartphone" onClose={() => { setOverlay(null); setSmartphoneInit('home'); }} initialScreen={smartphoneInit} />
         )}
       </AnimatePresence>
     </div>

@@ -95,33 +95,45 @@ const CUSTOMER_DESIRED: Record<CustomerType, string> = {
 
 const INITIAL_MISSIONS: Mission[] = [
   {
-    id: 'install_drip',
-    description: '핸드드립 머신 설치하기',
-    target: 1, current: 1, // starts completed (drip starts at lv1)
-    reward: { hearts: 10 }, isCompleted: true,
+    id: 'serve_1',
+    description: '손님 1명 서빙하기',
+    target: 1, current: 0, baseline: 0,
+    reward: { hearts: 10 }, isCompleted: false,
   },
   {
     id: 'serve_10',
     description: '손님 10명 서빙하기',
-    target: 10, current: 0,
+    target: 10, current: 0, baseline: 0,
     reward: { hearts: 20 }, isCompleted: false,
   },
   {
     id: 'upgrade_drip',
     description: '핸드드립 머신 업그레이드하기',
-    target: 1, current: 0,
+    target: 1, current: 0, baseline: 0,
     reward: { hearts: 25 }, isCompleted: false,
   },
   {
     id: 'install_espresso',
     description: '에스프레소 머신 설치하기',
-    target: 1, current: 0,
+    target: 1, current: 0, baseline: 0,
     reward: { hearts: 30 }, isCompleted: false,
   },
   {
-    id: 'serve_50',
-    description: '손님 50명 서빙하기',
-    target: 50, current: 0,
+    id: 'hire_worker',
+    description: '직원 첫 번째 채용하기',
+    target: 1, current: 0, baseline: 0,
+    reward: { hearts: 35 }, isCompleted: false,
+  },
+  {
+    id: 'install_waterpump',
+    description: '워터펌프 설치하기',
+    target: 1, current: 0, baseline: 0,
+    reward: { hearts: 45 }, isCompleted: false,
+  },
+  {
+    id: 'serve_30',
+    description: '손님 30명 서빙하기',
+    target: 30, current: 0, baseline: 0,
     reward: { hearts: 50 }, isCompleted: false,
   },
 ];
@@ -360,11 +372,14 @@ export const useGameStore = create<GameState & GameActions>()(
           // 5. Update missions
           const newServedTotal = state.customersServed + customersServedGain;
           let newPendingReward = state.pendingMissionReward;
-          const newMissions = state.missions.map(m => {
+          const serveIds = new Set(['serve_1', 'serve_10', 'serve_30']);
+
+          // 1st pass: update progress
+          let newMissions = state.missions.map(m => {
             if (m.isCompleted) return m;
             let newCurrent = m.current;
-            if (m.id === 'serve_10' || m.id === 'serve_50') {
-              newCurrent = Math.min(m.target, newServedTotal);
+            if (serveIds.has(m.id)) {
+              newCurrent = Math.min(m.target, newServedTotal - m.baseline);
             }
             const done = newCurrent >= m.target;
             if (done && !m.isCompleted && !newPendingReward) {
@@ -372,6 +387,19 @@ export const useGameStore = create<GameState & GameActions>()(
             }
             return { ...m, current: newCurrent, isCompleted: done };
           });
+
+          // 2nd pass: 서빙 미션이 방금 완료됐으면 이후 서빙 미션의 baseline을 현재 총합으로 리셋
+          const justCompletedServeIdx = newMissions.findIndex(
+            (m, i) => serveIds.has(m.id) && m.isCompleted && !state.missions[i].isCompleted
+          );
+          if (justCompletedServeIdx !== -1) {
+            newMissions = newMissions.map((m, i) => {
+              if (i > justCompletedServeIdx && !m.isCompleted && serveIds.has(m.id)) {
+                return { ...m, baseline: newServedTotal, current: 0 };
+              }
+              return m;
+            });
+          }
 
           // Collect heart rewards
           let heartsGained = 0;
@@ -473,16 +501,27 @@ export const useGameStore = create<GameState & GameActions>()(
             if (m.id === 'install_espresso' && id === 'espresso_machine') {
               return { ...m, current: 1, isCompleted: true };
             }
+            if (m.id === 'install_waterpump' && id === 'water_pump') {
+              return { ...m, current: 1, isCompleted: true };
+            }
             return m;
           });
+          const justCompleted = newMissions.find((m, i) => m.isCompleted && !state.missions[i].isCompleted);
+          const missionHearts = justCompleted ? justCompleted.reward.hearts : 0;
+          const newPending = !state.pendingMissionReward && justCompleted ? justCompleted.id : state.pendingMissionReward;
 
           return {
             ...state,
-            resources: { ...state.resources, coins: state.resources.coins - eq.unlockCost },
+            resources: {
+              ...state.resources,
+              coins: state.resources.coins - eq.unlockCost,
+              hearts: state.resources.hearts + missionHearts,
+            },
             equipment: state.equipment.map(e =>
               e.id === id ? { ...e, level: 1, productionProgress: 0 } : e
             ),
             missions: newMissions,
+            pendingMissionReward: newPending,
           };
         });
       },
@@ -500,19 +539,23 @@ export const useGameStore = create<GameState & GameActions>()(
             }
             return m;
           });
+          const justCompleted = newMissions.find((m, i) => m.isCompleted && !state.missions[i].isCompleted);
+          const missionHearts = justCompleted ? justCompleted.reward.hearts : 0;
+          const newPending = !state.pendingMissionReward && justCompleted ? justCompleted.id : state.pendingMissionReward;
 
           return {
             ...state,
             resources: {
               ...state.resources,
               coins: state.resources.coins - cost,
-              hearts: state.resources.hearts + eq.heartsOnUpgrade,
+              hearts: state.resources.hearts + eq.heartsOnUpgrade + missionHearts,
             },
             equipment: state.equipment.map(e =>
               e.id === id ? { ...e, level: e.level + 1 } : e
             ),
             upgradeCount: state.upgradeCount + 1,
             missions: newMissions,
+            pendingMissionReward: newPending,
           };
         });
       },
@@ -528,10 +571,26 @@ export const useGameStore = create<GameState & GameActions>()(
           if (current >= 5) return state;
           const cost = getAlbanetHireCost(current);
           if (cost > 0 && state.resources.cheese < cost) return state;
+          const newMissions = state.missions.map(m => {
+            if (m.id === 'hire_worker' && !m.isCompleted) {
+              return { ...m, current: 1, isCompleted: true };
+            }
+            return m;
+          });
+          const justCompleted = newMissions.find((m, i) => m.isCompleted && !state.missions[i].isCompleted);
+          const missionHearts = justCompleted ? justCompleted.reward.hearts : 0;
+          const newPending = !state.pendingMissionReward && justCompleted ? justCompleted.id : state.pendingMissionReward;
+
           return {
             ...state,
-            resources: { ...state.resources, cheese: state.resources.cheese - cost },
+            resources: {
+              ...state.resources,
+              cheese: state.resources.cheese - cost,
+              hearts: state.resources.hearts + missionHearts,
+            },
             albanetWorkers: { ...state.albanetWorkers, [equipmentId]: current + 1 },
+            missions: newMissions,
+            pendingMissionReward: newPending,
           };
         });
       },
@@ -564,7 +623,7 @@ export const useGameStore = create<GameState & GameActions>()(
       },
     }),
     {
-      name: 'tiny-cafe-v2',
+      name: 'tiny-cafe-v4',
       partialize: (state) => ({
         resources: state.resources,
         equipment: state.equipment.map(e => ({ id: e.id, level: e.level })),

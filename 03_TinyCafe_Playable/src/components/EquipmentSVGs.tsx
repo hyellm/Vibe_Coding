@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import waterpumpBaseworkerImg from '../../TinyCafe_reference_img/waterpump_baseworker.png';
 
 interface SVGProps {
   level: number;
@@ -214,7 +215,7 @@ export function EspressoSVG({ level, progress, scale = 1, hideLv = false, hideBa
 }
 
 // ── Water Pump (tall glass carafe with teal arc frame) ───────────────
-export function WaterPumpSVG({ level, progress, scale = 1, hideLv = false, hideBar = false }: SVGProps) {
+export function WaterPumpSVG({ level, progress, scale = 1, hideLv = false, hideBar = false, showBaseWorker = false }: SVGProps & { showBaseWorker?: boolean }) {
   const w = 90 * scale;
   const h = 105 * scale;
   // Water level drops from top as progress increases (dispenser being consumed)
@@ -242,13 +243,13 @@ export function WaterPumpSVG({ level, progress, scale = 1, hideLv = false, hideB
         </defs>
 
         {/* Left arc arm */}
-        <path d="M28 26 Q8 52 28 78" stroke="#4BBDB0" strokeWidth={3.2} fill="none" strokeLinecap="round" />
+        <path d="M28 26 Q8 52 28 78" stroke="#4AA8E0" strokeWidth={3.2} fill="none" strokeLinecap="round" />
         {/* Right arc arm */}
-        <path d="M62 26 Q82 52 62 78" stroke="#4BBDB0" strokeWidth={3.2} fill="none" strokeLinecap="round" />
+        <path d="M62 26 Q82 52 62 78" stroke="#4AA8E0" strokeWidth={3.2} fill="none" strokeLinecap="round" />
 
         {/* Glass cylinder — back wall tint */}
         <rect x={27} y={glassTop} width={36} height={glassBot - glassTop} rx={6}
-              fill="rgba(195,248,255,0.07)" stroke="#92E4D8" strokeWidth={1.4} />
+              fill="rgba(195,248,255,0.07)" stroke="#80D4F5" strokeWidth={1.4} />
 
         {/* Water fill */}
         <rect x={27} y={fillY} width={36} height={fillH}
@@ -266,34 +267,45 @@ export function WaterPumpSVG({ level, progress, scale = 1, hideLv = false, hideB
 
         {/* Glass front overlay (subtle depth) */}
         <rect x={27} y={glassTop} width={36} height={glassBot - glassTop} rx={6}
-              fill="url(#wpGlassGrad)" stroke="#92E4D8" strokeWidth={1.4} />
+              fill="url(#wpGlassGrad)" stroke="#80D4F5" strokeWidth={1.4} />
 
         {/* Bottom base */}
-        <ellipse cx={45} cy={86} rx={22} ry={4.5} fill="#3DAAA0" />
-        <ellipse cx={45} cy={84} rx={20} ry={3.5} fill="#5ECFBF" />
+        <ellipse cx={45} cy={86} rx={22} ry={4.5} fill="#3590C8" />
+        <ellipse cx={45} cy={84} rx={20} ry={3.5} fill="#5CC8F0" />
 
         {/* Top cap */}
-        <ellipse cx={45} cy={20} rx={20} ry={4.5} fill="#3DAAA0" />
-        <ellipse cx={45} cy={18} rx={18} ry={4} fill="#6EDDD0" />
+        <ellipse cx={45} cy={20} rx={20} ry={4.5} fill="#3590C8" />
+        <ellipse cx={45} cy={18} rx={18} ry={4} fill="#6AD8F5" />
 
         {/* Top knob */}
-        <rect x={38} y={8} width={14} height={11} rx={5} fill="#4BBDB0" />
-        <ellipse cx={45} cy={8} rx={7} ry={3} fill="#9AEEE4" />
-        <ellipse cx={45} cy={6} rx={4.5} ry={2} fill="#C8FAF4" opacity={0.7} />
+        <rect x={38} y={8} width={14} height={11} rx={5} fill="#4AA8E0" />
+        <ellipse cx={45} cy={8} rx={7} ry={3} fill="#90E4FC" />
+        <ellipse cx={45} cy={6} rx={4.5} ry={2} fill="#C8F4FF" opacity={0.7} />
 
-        {/* Spout arm */}
-        <path d="M27 70 Q13 70 13 80" stroke="#4BBDB0" strokeWidth={4} fill="none" strokeLinecap="round" />
-        <circle cx={13} cy={81} r={3} fill="#5ECFBF" />
+        {/* Spout arm — 가로를 더 길게 뻗다가 자연스럽게 꺾이는 형태 */}
+        <path d="M27 70 L-6 70 Q-14 70 -14 78 L-14 93"
+          stroke="#4AA8E0" strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={-14} cy={93} r={3} fill="#5CC8F0" />
 
         {/* Water drip animation */}
         {progress > 0 && progress < 1 && (
-          <motion.ellipse cx={13} cy={85} rx={2} ry={2.8} fill="#A8EEFA"
-            animate={{ cy: [84, 93, 84] }}
+          <motion.ellipse cx={-14} cy={97} rx={2} ry={2.8} fill="#A8EEFA"
+            animate={{ cy: [95, 104, 95] }}
             transition={{ repeat: Infinity, duration: 0.55, ease: 'easeIn' }} />
         )}
 
+        {/* Base worker — sits on horizontal pipe using PNG */}
+        {showBaseWorker && (
+          <image
+            href={waterpumpBaseworkerImg}
+            x={-17} y={44}
+            width={38} height={40}
+            preserveAspectRatio="xMidYMid meet"
+          />
+        )}
+
       </svg>
-      {!hideBar && <ProgressBar pct={progress} width={56} mt={0} color="#1A8C82" />}
+      {!hideBar && <ProgressBar pct={progress} width={56} mt={0} color="#48B4F0" />}
       {!hideLv && <LvBadge level={level} />}
     </div>
   );

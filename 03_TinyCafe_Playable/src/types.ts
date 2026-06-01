@@ -72,6 +72,7 @@ export interface Mission {
   description: string;
   target: number;
   current: number;
+  baseline: number;
   reward: { hearts: number; gems?: number };
   isCompleted: boolean;
 }

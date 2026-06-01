@@ -11,7 +11,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function UpgradeModal() {
+export default function UpgradeModal({ onHireWorker }: { onHireWorker?: () => void }) {
   const upgradeModalOpen = useGameStore(s => s.upgradeModalOpen);
   const selectedId = useGameStore(s => s.selectedEquipmentId);
   const equipment = useGameStore(s => s.equipment);
@@ -76,6 +76,7 @@ export default function UpgradeModal() {
                 onPrev={goPrev}
                 onNext={goNext}
                 showNav={upgradableEqs.length > 1}
+                onHireWorker={onHireWorker}
               />
             ) : (
               <div className="p-6 text-center text-white font-bold">
@@ -98,9 +99,10 @@ interface PanelProps {
   onPrev: () => void;
   onNext: () => void;
   showNav: boolean;
+  onHireWorker?: () => void;
 }
 
-function EquipmentPanel({ eq, coins, onBuy, onUpgrade, onClose, onPrev, onNext, showNav }: PanelProps) {
+function EquipmentPanel({ eq, coins, onBuy, onUpgrade, onClose, onPrev, onNext, showNav, onHireWorker }: PanelProps) {
   const isLocked = eq.level === 0;
   const upgradeCost = getUpgradeCost(eq);
   const coinsPerItem = getCoinsPerItem(eq);
@@ -244,6 +246,7 @@ function EquipmentPanel({ eq, coins, onBuy, onUpgrade, onClose, onPrev, onNext, 
             border: '1px solid rgba(255,200,100,0.2)',
             cursor: 'pointer',
           }}
+          onClick={() => { onClose(); onHireWorker?.(); }}
         >
           <span>🐭+</span>
           <span>직원 고용</span>

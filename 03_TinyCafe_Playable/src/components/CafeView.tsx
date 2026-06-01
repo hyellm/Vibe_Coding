@@ -6,6 +6,7 @@ import { HandDripSVG, EspressoSVG, WaterPumpSVG } from './EquipmentSVGs';
 import dolceImg from '../../TinyCafe_reference_img/Dolce.png';
 import espressoWorkerImg from '../../TinyCafe_reference_img/espresso_worker.png';
 import waterpumpWorkerImg from '../../TinyCafe_reference_img/waterpump_worker.png';
+import espressoBaseworkerImg from '../../TinyCafe_reference_img/espresso_baseworker.png';
 
 // ── Brew button ────────────────────────────────────────────────────
 function BrewButton() {
@@ -111,67 +112,181 @@ function WindowZone() {
           background: 'transparent',
         }}
       >
-        {/* === City Street Background === */}
+        {/* === Warm Sunny Café Street === */}
 
-        {/* Sky gradient */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #4E9FCE 0%, #73BBDF 20%, #9CCDE8 50%, #C0E2F2 75%, #D8EDF8 100%)' }} />
+        {/* Sky — clear blue to warm golden horizon */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #5AB8EC 0%, #80CCF4 22%, #B8E2F8 55%, #EEE8C4 80%, #F8DCA0 100%)' }} />
 
-        {/* Hazy far buildings */}
-        <div className="absolute" style={{ bottom: 100, left: 0, right: 0, display: 'flex', alignItems: 'flex-end', flexWrap: 'nowrap', overflow: 'hidden' }}>
-          {[
-            { w: 58, h: 62 }, { w: 38, h: 50 }, { w: 68, h: 80 },
-            { w: 32, h: 54 }, { w: 52, h: 72 }, { w: 44, h: 55 },
-          ].map((b, i) => (
-            <div key={i} style={{ width: b.w, height: b.h, flexShrink: 0, background: `rgba(148,178,202,${0.36 + i * 0.02})`, borderRadius: '3px 3px 0 0' }} />
+
+        {/* Clouds */}
+        <div className="absolute" style={{ top: 20, left: 6 }}>
+          <div style={{ position: 'relative', width: 68, height: 30 }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 8, width: 52, height: 18, borderRadius: 9, background: 'rgba(255,255,255,0.93)' }} />
+            <div style={{ position: 'absolute', bottom: 6, left: 16, width: 36, height: 24, borderRadius: 12, background: 'rgba(255,255,255,0.90)' }} />
+            <div style={{ position: 'absolute', bottom: 4, left: 32, width: 26, height: 20, borderRadius: 10, background: 'rgba(255,255,255,0.88)' }} />
+          </div>
+        </div>
+        <div className="absolute" style={{ top: 12, left: 88 }}>
+          <div style={{ position: 'relative', width: 50, height: 24 }}>
+            <div style={{ position: 'absolute', bottom: 0, left: 5, width: 40, height: 14, borderRadius: 7, background: 'rgba(255,255,255,0.86)' }} />
+            <div style={{ position: 'absolute', bottom: 4, left: 12, width: 26, height: 18, borderRadius: 9, background: 'rgba(255,255,255,0.90)' }} />
+            <div style={{ position: 'absolute', bottom: 3, left: 24, width: 18, height: 15, borderRadius: 7, background: 'rgba(255,255,255,0.82)' }} />
+          </div>
+        </div>
+
+        {/* Background skyline — soft distant buildings */}
+        <div className="absolute" style={{ bottom: 95, left: 0, right: 0, display: 'flex', alignItems: 'flex-end', overflow: 'hidden' }}>
+          {[{w:30,h:72},{w:20,h:88},{w:34,h:65},{w:24,h:95},{w:38,h:78},{w:16,h:100},{w:28,h:68},{w:22,h:84},{w:36,h:70},{w:26,h:90}].map((b,i) => (
+            <div key={i} style={{ width: b.w, height: b.h, flexShrink: 0, background: `rgba(195,180,155,${0.16+i*0.007})`, borderRadius: '2px 2px 0 0' }} />
           ))}
         </div>
 
-        {/* Main building — left */}
-        <div className="absolute" style={{ left: 0, bottom: 95, width: 70, height: 178, background: '#7A8EA0', borderRadius: '4px 4px 0 0' }}>
-          <div style={{ height: 10, background: 'rgba(0,0,0,0.2)', borderRadius: '4px 4px 0 0' }} />
-          {Array.from({ length: 5 }, (_, r) => Array.from({ length: 2 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
-            <div key={i} style={{ position: 'absolute', left: 9 + col * 32, top: 16 + r * 32, width: 20, height: 23, background: i === 6 ? 'rgba(255,240,148,0.88)' : 'rgba(178,210,240,0.58)', border: '1.5px solid rgba(78,105,125,0.38)', borderRadius: 2 }} />
+        {/* Building LEFT — 4F cream residential */}
+        <div className="absolute" style={{ left: 4, bottom: 95, width: 76, height: 122 }}>
+          <div style={{ position: 'absolute', inset: 0, background: '#ECD8B2' }} />
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 12, background: '#C87840', borderRadius: '4px 4px 0 0' }} />
+          <div style={{ position: 'absolute', top: 11, left: 0, right: 0, height: 3, background: '#B86030' }} />
+          {[38,62,86].map(y => (
+            <div key={y} style={{ position: 'absolute', top: y, left: 0, right: 0, height: 2, background: 'rgba(150,100,40,0.13)' }} />
           ))}
+          {Array.from({length:4},(_,r)=>Array.from({length:2},(_,c)=>({r,c}))).flat().map(({r,c},i) => (
+            <div key={i} style={{ position: 'absolute', left: 9+c*40, top: 16+r*24, width: 20, height: 21,
+              background: 'rgba(188,220,252,0.68)',
+              border: '1.5px solid rgba(160,125,70,0.36)', borderRadius: 2 }}>
+              <div style={{ position:'absolute', top:0, bottom:0, left:'50%', width:1, background:'rgba(150,120,60,0.20)' }} />
+              <div style={{ position:'absolute', left:0, right:0, top:'50%', height:1, background:'rgba(150,120,60,0.16)' }} />
+            </div>
+          ))}
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:18, background:'#D8C498' }}>
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'rgba(100,70,20,0.18)' }} />
+          </div>
         </div>
 
-        {/* Main building — center */}
-        <div className="absolute" style={{ left: 73, bottom: 95, width: 88, height: 215, background: '#8A9EAF', borderRadius: '5px 5px 0 0' }}>
-          <div style={{ height: 12, background: 'rgba(0,0,0,0.2)', borderRadius: '5px 5px 0 0' }} />
-          {Array.from({ length: 6 }, (_, r) => Array.from({ length: 3 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
-            <div key={i} style={{ position: 'absolute', left: 8 + col * 27, top: 18 + r * 32, width: 18, height: 21, background: [4, 11, 14].includes(i) ? 'rgba(255,242,155,0.85)' : 'rgba(172,205,238,0.55)', border: '1.5px solid rgba(80,108,130,0.35)', borderRadius: 2 }} />
+        {/* Building CENTER — 4F warm stone (tallest, with gap on both sides) */}
+        <div className="absolute" style={{ left: 100, bottom: 95, width: 98, height: 138 }}>
+          <div style={{ position: 'absolute', inset: 0, background: '#D8C29C' }} />
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:5, background:'#A86030' }} />
+          <div style={{ position:'absolute', top:4, left:5, right:5, height:9, background:'#B87040', borderRadius:'3px 3px 0 0' }} />
+          <div style={{ position:'absolute', top:12, left:0, right:0, height:3, background:'#C88050' }} />
+          {[14,46].map(x => (
+            <div key={x} style={{ position:'absolute', top:14, bottom:0, left:x, width:2.5, background:'rgba(140,95,35,0.13)' }} />
           ))}
+          {[42,68,94].map(y => (
+            <div key={y} style={{ position:'absolute', top:y, left:0, right:0, height:2, background:'rgba(140,95,30,0.13)' }} />
+          ))}
+          {Array.from({length:4},(_,r)=>Array.from({length:3},(_,c)=>({r,c}))).flat().map(({r,c},i) => (
+            <div key={i} style={{ position:'absolute', left:8+c*30, top:16+r*26, width:20, height:22,
+              background: 'rgba(185,218,252,0.68)',
+              border:'1.5px solid rgba(155,120,65,0.36)', borderRadius:2 }}>
+              <div style={{ position:'absolute', top:0, bottom:0, left:'50%', width:1, background:'rgba(140,110,55,0.20)' }} />
+              <div style={{ position:'absolute', left:0, right:0, top:'50%', height:1, background:'rgba(140,110,55,0.16)' }} />
+            </div>
+          ))}
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:20, background:'#C8B485' }}>
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'rgba(100,65,15,0.18)' }} />
+            <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:28, height:16, background:'rgba(160,120,60,0.28)', borderRadius:'3px 3px 0 0' }} />
+          </div>
         </div>
 
-        {/* Main building — right */}
-        <div className="absolute" style={{ right: 0, bottom: 95, width: 62, height: 158, background: '#728294', borderRadius: '4px 4px 0 0' }}>
-          <div style={{ height: 9, background: 'rgba(0,0,0,0.2)', borderRadius: '4px 4px 0 0' }} />
-          {Array.from({ length: 4 }, (_, r) => Array.from({ length: 2 }, (_, c) => ({ r, c }))).flat().map(({ r, c: col }, i) => (
-            <div key={i} style={{ position: 'absolute', left: 8 + col * 30, top: 15 + r * 32, width: 19, height: 23, background: i === 3 ? 'rgba(255,243,158,0.85)' : 'rgba(176,208,238,0.58)', border: '1.5px solid rgba(74,100,120,0.38)', borderRadius: 2 }} />
+        {/* Building RIGHT — 4F sandy residential */}
+        <div className="absolute" style={{ right: 4, bottom: 95, width: 68, height: 112 }}>
+          <div style={{ position:'absolute', inset:0, background:'#D4BC92' }} />
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:11, background:'#A05030', borderRadius:'4px 4px 0 0' }} />
+          <div style={{ position:'absolute', top:10, left:0, right:0, height:3, background:'#B86040' }} />
+          {[36,60,84].map(y => (
+            <div key={y} style={{ position:'absolute', top:y, left:0, right:0, height:2, background:'rgba(140,95,30,0.13)' }} />
           ))}
+          {Array.from({length:4},(_,r)=>Array.from({length:2},(_,c)=>({r,c}))).flat().map(({r,c},i) => (
+            <div key={i} style={{ position:'absolute', left:8+c*36, top:14+r*24, width:20, height:20,
+              background: 'rgba(185,218,250,0.65)',
+              border:'1.5px solid rgba(155,118,60,0.34)', borderRadius:2 }}>
+              <div style={{ position:'absolute', top:0, bottom:0, left:'50%', width:1, background:'rgba(140,108,52,0.18)' }} />
+              <div style={{ position:'absolute', left:0, right:0, top:'50%', height:1, background:'rgba(140,108,52,0.15)' }} />
+            </div>
+          ))}
+          <div style={{ position:'absolute', bottom:0, left:0, right:0, height:17, background:'#C4AE84' }}>
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:'rgba(100,65,15,0.16)' }} />
+          </div>
         </div>
 
-        {/* Far sidewalk (across street) */}
-        <div className="absolute" style={{ bottom: 87, left: 0, right: 0, height: 8, background: '#9AA2AA' }} />
+        {/* Lamp post — left gap (between left & center building) */}
+        <svg className="absolute" style={{ bottom: 87, left: 70, width: 8, height: 68, overflow: 'visible' }}>
+          <rect x={3} y={6} width={2.5} height={62} rx={1.2} fill="#6A5030" />
+          <path d="M4 6 Q4 1 11 0" stroke="#6A5030" strokeWidth={2} fill="none" strokeLinecap="round" />
+          <ellipse cx={11} cy={0} rx={4} ry={3} fill="rgba(255,230,100,0.25)" />
+          <circle cx={11} cy={0} r={3} fill="#FFE890" opacity={0.92} />
+          <circle cx={11} cy={0} r={1.6} fill="#FFFAD0" />
+        </svg>
 
-        {/* Road */}
-        <div className="absolute" style={{ bottom: 42, left: 0, right: 0, height: 45, background: '#5C6470' }}>
-          <div style={{ position: 'absolute', top: '48%', left: 0, right: 0, borderTop: '2px dashed rgba(255,255,255,0.32)', transform: 'translateY(-50%)' }} />
+        {/* Far sidewalk — warm stone */}
+        <div className="absolute" style={{ bottom: 87, left: 0, right: 0, height: 8, background: '#C8B898' }} />
+
+        {/* Tree 1 — left side, slender, in front of left building */}
+        <svg className="absolute" style={{ bottom: 83, left: 18, width: 24, height: 48, overflow: 'visible' }}>
+          <ellipse cx={12} cy={46} rx={8} ry={2} fill="rgba(0,0,0,0.08)" />
+          <rect x={10} y={28} width={4} height={18} rx={2} fill="#7A5020" />
+          <ellipse cx={12} cy={20} rx={11} ry={13} fill="#3E8824" />
+          <ellipse cx={12} cy={15} rx={9} ry={10} fill="#50A030" />
+          <ellipse cx={9} cy={11} rx={6} ry={8} fill="#64B83C" opacity={0.68} />
+          <ellipse cx={15} cy={13} rx={5} ry={7} fill="#72CA46" opacity={0.55} />
+        </svg>
+
+        {/* Tree 2 — right of center, larger */}
+        <svg className="absolute" style={{ bottom: 83, left: 186, width: 34, height: 60, overflow: 'visible' }}>
+          <ellipse cx={17} cy={58} rx={12} ry={2.8} fill="rgba(0,0,0,0.09)" />
+          <rect x={14} y={34} width={6} height={24} rx={3} fill="#7A5020" />
+          <ellipse cx={17} cy={25} rx={16} ry={18} fill="#3A8422" />
+          <ellipse cx={17} cy={19} rx={14} ry={15} fill="#4EA02E" />
+          <ellipse cx={12} cy={14} rx={10} ry={12} fill="#62BC3C" opacity={0.68} />
+          <ellipse cx={21} cy={16} rx={8} ry={10} fill="#74CC48" opacity={0.58} />
+          <ellipse cx={16} cy={9} rx={7} ry={7} fill="rgba(185,255,95,0.26)" />
+        </svg>
+
+        {/* Bench — right side, under tree 2 */}
+        <svg className="absolute" style={{ bottom: 89, left: 178, width: 38, height: 24, overflow: 'visible' }}>
+          <rect x={5} y={14} width={3} height={10} rx={1.5} fill="#7A5020" />
+          <rect x={30} y={14} width={3} height={10} rx={1.5} fill="#7A5020" />
+          <rect x={3} y={11} width={32} height={5} rx={2.5} fill="#A86830" />
+          <rect x={5} y={4} width={28} height={4} rx={2} fill="#BA7840" />
+          <rect x={9} y={4} width={2.5} height={10} rx={1} fill="#7A5020" />
+          <rect x={26.5} y={4} width={2.5} height={10} rx={1} fill="#7A5020" />
+        </svg>
+
+        {/* Lamp post — far right, leaning left */}
+        <svg className="absolute" style={{ bottom: 87, right: 20, width: 8, height: 62, overflow: 'visible' }}>
+          <rect x={3} y={6} width={2.5} height={56} rx={1.2} fill="#6A5030" />
+          <path d="M4 6 Q4 1 -3 0" stroke="#6A5030" strokeWidth={2} fill="none" strokeLinecap="round" />
+          <ellipse cx={-3} cy={0} rx={4} ry={3} fill="rgba(255,230,100,0.25)" />
+          <circle cx={-3} cy={0} r={3} fill="#FFE890" opacity={0.90} />
+          <circle cx={-3} cy={0} r={1.6} fill="#FFFAD0" />
+        </svg>
+
+        {/* Road — warm paving */}
+        <div className="absolute" style={{ bottom: 42, left: 0, right: 0, height: 45, background: '#C0B090' }}>
+          {[9,20,31,40].map(y => (
+            <div key={y} style={{ position: 'absolute', top: y, left: 0, right: 0, height: 1, background: 'rgba(0,0,0,0.06)' }} />
+          ))}
+          {[22,50,80,108,136,162,192,222,248].map(x => (
+            <div key={x} style={{ position: 'absolute', left: x, top: 0, bottom: 0, width: 1, background: 'rgba(0,0,0,0.05)' }} />
+          ))}
         </div>
 
         {/* Curb */}
-        <div className="absolute" style={{ bottom: 38, left: 0, right: 0, height: 4, background: '#8892A0' }} />
+        <div className="absolute" style={{ bottom: 38, left: 0, right: 0, height: 4, background: '#D4C4A0' }} />
 
-        {/* Near sidewalk (where cat walks) */}
-        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 38, background: 'linear-gradient(180deg,#B4B0A8 0%,#C2BEB6 100%)' }}>
-          <div style={{ position: 'absolute', top: 11, left: 0, right: 0, borderTop: '1px solid rgba(0,0,0,0.1)' }} />
-          <div style={{ position: 'absolute', top: 23, left: 0, right: 0, borderTop: '1px solid rgba(0,0,0,0.07)' }} />
+        {/* Near sidewalk — warm beige stone */}
+        <div className="absolute" style={{ bottom: 0, left: 0, right: 0, height: 38, background: 'linear-gradient(180deg,#D6C9B0 0%,#E2D4BC 100%)' }}>
+          <div style={{ position: 'absolute', top: 10, left: 0, right: 0, height: 1, background: 'rgba(0,0,0,0.08)' }} />
+          <div style={{ position: 'absolute', top: 22, left: 0, right: 0, height: 1, background: 'rgba(0,0,0,0.06)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent 5%,rgba(255,220,140,0.10) 50%,transparent 95%)', pointerEvents: 'none' }} />
         </div>
 
-        {/* Glass blue tint */}
-        <div className="absolute inset-0" style={{ background: 'rgba(180,220,255,0.05)', pointerEvents: 'none' }} />
-        {/* Glass sheen */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(140deg, rgba(255,255,255,0.2) 0%, transparent 45%)', pointerEvents: 'none' }} />
-        {/* Glass reflection lines */}
+        {/* Warm sunlight overlay */}
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(155deg, rgba(255,215,90,0.09) 0%, transparent 55%)', pointerEvents: 'none' }} />
+
+        {/* Glass effects */}
+        <div className="absolute inset-0" style={{ background: 'rgba(200,232,255,0.04)', pointerEvents: 'none' }} />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(140deg, rgba(255,255,255,0.22) 0%, transparent 45%)', pointerEvents: 'none' }} />
         <div className="absolute" style={{ top: 18, left: 22, width: 5, height: 150, background: 'rgba(255,255,255,0.14)', borderRadius: 3, transform: 'rotate(-8deg)', pointerEvents: 'none' }} />
         <div className="absolute" style={{ top: 35, left: 42, width: 2.5, height: 100, background: 'rgba(255,255,255,0.09)', borderRadius: 2, transform: 'rotate(-8deg)', pointerEvents: 'none' }} />
       </div>
@@ -198,10 +313,32 @@ function WindowZone() {
         }}
       />
 
-      {/* Pendant lamp */}
-      <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)' }}>
-        <div style={{ width: 3, height: 20, background: '#5A3A20', margin: '0 auto' }} />
-        <div style={{ width: 28, height: 18, borderRadius: '4px 4px 50% 50%', background: '#E8D0A0', border: '2px solid #C0A060', boxShadow: '0 4px 12px rgba(255,220,100,0.4)' }} />
+      {/* Pendant lamp — modern */}
+      <div className="absolute" style={{ top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 14 }}>
+        <svg width={42} height={52} viewBox="0 0 42 52" style={{ overflow: 'visible' }}>
+          {/* Light bloom on ceiling */}
+          <ellipse cx={21} cy={2} rx={12} ry={3} fill="rgba(255,225,140,0.18)" />
+          {/* Cord */}
+          <line x1={21} y1={0} x2={21} y2={11} stroke="#8A7050" strokeWidth={1.4} strokeLinecap="round" />
+          {/* Shade — clean dome, warm cream */}
+          <path d="M15 11 Q5 15 4 28 Q4 33 21 34 Q38 33 38 28 Q37 15 27 11 Z" fill="#EDE0C8" />
+          {/* Shade inner (slightly lighter for depth) */}
+          <path d="M15 11 Q6 15 5 27 Q5 32 21 33 Q37 32 37 27 Q36 15 27 11 Z" fill="#F4EAD4" />
+          {/* Top ring */}
+          <ellipse cx={21} cy={11} rx={6} ry={1.8} fill="#C8B090" />
+          <ellipse cx={21} cy={10.5} rx={5} ry={1.2} fill="#D8C4A0" />
+          {/* Subtle sheen highlight */}
+          <path d="M15 12 Q8 17 7 26" stroke="rgba(255,255,255,0.30)" strokeWidth={2.5} fill="none" strokeLinecap="round" />
+          {/* Bottom rim */}
+          <ellipse cx={21} cy={34} rx={17} ry={2.8} fill="#C0A880" />
+          <ellipse cx={21} cy={33.5} rx={15} ry={2} fill="#D4BC98" />
+          {/* Inner warm glow */}
+          <ellipse cx={21} cy={31} rx={9} ry={4.5} fill="rgba(255,220,150,0.45)" />
+          <ellipse cx={21} cy={30} rx={5.5} ry={3} fill="rgba(255,240,195,0.65)" />
+          {/* Light cone below shade */}
+          <path d="M8 36 L1 52 L41 52 L34 36 Z" fill="rgba(255,215,130,0.09)" />
+          <ellipse cx={21} cy={52} rx={20} ry={4.5} fill="rgba(255,210,110,0.11)" />
+        </svg>
       </div>
 
       {/* 고양이 손님 컨테이너 — arch window 밖에 배치해 overflow 클리핑 방지 */}
@@ -291,9 +428,11 @@ function CoinFX({ fx }: { fx: { id: string; x: number; y: number; amount: number
   );
 }
 
+
 // ── Cafe interior ──────────────────────────────────────────────────
 function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: () => void; onOpenSmartphone: () => void }) {
   const equipment = useGameStore(s => s.equipment);
+  const albanetWorkers = useGameStore(s => s.albanetWorkers);
   const brewingId = useGameStore(s => s.brewingCustomerId);
   const brewTimer = useGameStore(s => s.brewTimer);
   const brewDuration = useGameStore(s => s.brewDuration);
@@ -416,11 +555,12 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
           )}
         </div>
 
-        <div className="flex-1 flex flex-col items-center">
+        {/* Water pump: marginLeft 조정 (노즐 연장 길이만큼 왼쪽 이동) */}
+        <div className="flex-1 flex flex-col items-center" style={{ marginLeft: 14 }}>
           {waterPump && waterPump.level > 0 && (
             <button onClick={() => openUpgrade('water_pump')}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <WaterPumpSVG level={waterPump.level} progress={pumpProg} scale={0.82} />
+              <WaterPumpSVG level={waterPump.level} progress={pumpProg} scale={0.82} showBaseWorker />
             </button>
           )}
         </div>
@@ -430,19 +570,29 @@ function CafeInterior({ onOpenFacility, onOpenSmartphone }: { onOpenFacility: ()
       <div className="absolute flex"
         style={{ bottom: 25, left: 0, right: 0, zIndex: 4 }}>
 
-        <div className="flex-1 flex justify-center">
-          {espresso && espresso.level > 0 && (
-            <motion.img src={espressoWorkerImg} alt="espresso worker"
-              style={{ width: 46, height: 46, objectFit: 'contain' }}
-              animate={{ x: [-2, 2, -2] }}
-              transition={{ repeat: Infinity, duration: 0.8 }} />
-          )}
+        {/* Espresso side: base worker always, hired worker only when hired — 그룹 전체 15px 왼쪽 */}
+        <div className="flex-1 flex justify-center items-end">
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, position: 'relative', left: -15 }}>
+            {espresso && espresso.level > 0 && (
+              <motion.img src={espressoBaseworkerImg} alt="espresso base worker"
+                style={{ width: 50, height: 50, objectFit: 'contain', flexShrink: 0 }}
+                animate={{ x: [-2, 2, -2] }}
+                transition={{ repeat: Infinity, duration: 0.8 }} />
+            )}
+            {espresso && espresso.level > 0 && (albanetWorkers['espresso_machine'] ?? 0) > 0 && (
+              <motion.img src={espressoWorkerImg} alt="espresso worker"
+                style={{ width: 46, height: 46, objectFit: 'contain' }}
+                animate={{ x: [-2, 2, -2] }}
+                transition={{ repeat: Infinity, duration: 0.8 }} />
+            )}
+          </div>
         </div>
 
-        <div className="flex-1 flex justify-center">
-          {waterPump && waterPump.level > 0 && (
+        {/* Water pump side: hired worker only when hired (base worker is inside SVG) */}
+        <div className="flex-1 flex justify-center" style={{ marginLeft: 14 }}>
+          {waterPump && waterPump.level > 0 && (albanetWorkers['water_pump'] ?? 0) > 0 && (
             <motion.img src={waterpumpWorkerImg} alt="waterpump worker"
-              style={{ width: 58, height: 58, objectFit: 'contain', position: 'relative', left: -32 }}
+              style={{ width: 58, height: 58, objectFit: 'contain', position: 'relative', left: -48 }}
               animate={{ rotate: [-5, 5, -5] }}
               transition={{ repeat: Infinity, duration: 1.5 }} />
           )}
