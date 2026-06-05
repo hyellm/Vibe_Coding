@@ -27,12 +27,14 @@ body {
   overflow: hidden;
   border-radius: 40px;
   box-shadow: 0 0 60px rgba(0,0,0,0.8);
+  transform-origin: center center;
 }
 
-@media (max-height: 860px) {
+/* 실제 모바일 기기에서는 phone-frame 스타일 제거 */
+@media (max-width: 600px) {
   #root {
-    height: 100vh;
     border-radius: 0;
+    box-shadow: none;
   }
 }
 
