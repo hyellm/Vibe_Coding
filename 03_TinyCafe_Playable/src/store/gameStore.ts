@@ -497,7 +497,9 @@ export const useGameStore = create<GameState & GameActions>()(
           const eq = state.equipment.find(e => e.id === id);
           if (!eq || eq.level > 0 || state.resources.coins < eq.unlockCost) return state;
 
+          const activeMissionId = state.missions.find(m => !m.isCompleted)?.id;
           const newMissions = state.missions.map(m => {
+            if (m.id !== activeMissionId) return m;
             if (m.id === 'install_espresso' && id === 'espresso_machine') {
               return { ...m, current: 1, isCompleted: true };
             }
@@ -533,7 +535,9 @@ export const useGameStore = create<GameState & GameActions>()(
           const cost = getUpgradeCost(eq);
           if (state.resources.coins < cost) return state;
 
+          const activeMissionId = state.missions.find(m => !m.isCompleted)?.id;
           const newMissions = state.missions.map(m => {
+            if (m.id !== activeMissionId) return m;
             if (m.id === 'upgrade_drip' && id === 'drip_coffee') {
               return { ...m, current: Math.min(m.target, m.current + 1), isCompleted: m.current + 1 >= m.target };
             }
@@ -571,8 +575,9 @@ export const useGameStore = create<GameState & GameActions>()(
           if (current >= 5) return state;
           const cost = getAlbanetHireCost(current);
           if (cost > 0 && state.resources.cheese < cost) return state;
+          const activeMissionId = state.missions.find(m => !m.isCompleted)?.id;
           const newMissions = state.missions.map(m => {
-            if (m.id === 'hire_worker' && !m.isCompleted) {
+            if (m.id === 'hire_worker' && !m.isCompleted && m.id === activeMissionId) {
               return { ...m, current: 1, isCompleted: true };
             }
             return m;

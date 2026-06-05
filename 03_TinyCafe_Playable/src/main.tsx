@@ -12,6 +12,12 @@ function ScaledApp() {
       const root = document.getElementById('root');
       if (!root) return;
       const scale = Math.min(window.innerWidth / GAME_W, window.innerHeight / GAME_H);
+      const offsetX = (window.innerWidth - GAME_W * scale) / 2;
+      const offsetY = (window.innerHeight - GAME_H * scale) / 2;
+      root.style.position = 'fixed';
+      root.style.left = `${offsetX}px`;
+      root.style.top = `${offsetY}px`;
+      root.style.transformOrigin = '0 0';
       root.style.transform = `scale(${scale})`;
     };
     applyScale();
